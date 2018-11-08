@@ -13,6 +13,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import com.google.gson.Gson;
+
 /**
  * 
  * @author juan
@@ -23,7 +25,6 @@ public class Grafo {
 	
 	public Grafo(int tamaño) {
 		this.MatrizAdyancencia=new int[tamaño][tamaño];
-		AsignarAleatorios();
 	}
 	/**
 	 * Método que hace un print de cada casilla de la matriz
@@ -36,6 +37,7 @@ public class Grafo {
 			}
 			System.out.println("");
 		}
+		System.out.println("==========");
 	}
 	/**
 	 * Método que se encarga de recorrer cada casilla de la matriz
@@ -85,7 +87,7 @@ public class Grafo {
 	 * este método extrae la información en xml de una matriz de adyacencia en la actual
 	 * con el fin de no necesitar guardrse en una variable.
 	 */
-	public void inXML() {
+	public void fromXML() {
 		File inputFile = new File("src/main/java/matriz.xml");
         SAXBuilder saxBuilder = new SAXBuilder();
         Document document = null;
@@ -112,6 +114,25 @@ public class Grafo {
 				this.MatrizAdyancencia[i][j]=n;
 			}
 		}
+	}
+	/**
+	 * Convierte la matriz de adyancencia del grafo
+	 * en una string de formate json
+	 * @return la string en json
+	 */
+	public String toJson() {
+		Gson gson = new Gson();
+		String json=gson.toJson(this.MatrizAdyancencia);
+		return json;
+	}
+	/**
+	 * A partir de una string en formato json se obtiene
+	 * una nueva matriz de adyancencia
+	 * @param json
+	 */
+	public void fromJson(String json){
+		Gson gson = new Gson();
+		this.MatrizAdyancencia=gson.fromJson(json, int[][].class);
 	}
 	
 }
