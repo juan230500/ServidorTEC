@@ -50,7 +50,7 @@ public class Grafo {
 				if (i!=j) {
 					Distancia=this.MatrizAdyancencia[i][j];
 					if (Distancia==0) {
-						Distancia=this.maximo*2;
+						Distancia=1000;
 					}
 					this.MatrizFloydDistancias[i][j]=Distancia;
 				}
@@ -69,8 +69,9 @@ public class Grafo {
 		int k=0;
 		int i=0;
 		int j=0;
+		int largo=this.MatrizAdyancencia.length;
 		displayVertices();
-		for (k=0;k<maximo-1;k++) {
+		for (k=0;k<largo;k++) {
 			System.out.print("iteración"+k+")");
 			displayDistancias();
 			for (i=0;i<this.MatrizAdyancencia.length;i++) {
@@ -99,6 +100,7 @@ public class Grafo {
 	public void displayVertices() {
 		System.out.println("=====Vertices=====");
 		for (int i=0;i<this.MatrizFloydVértices[0].length;i++) {
+			System.out.print(i+"=>\t");
 			for (int j=0;j<this.MatrizFloydVértices.length;j++) {
 				System.out.print(this.MatrizFloydVértices[j][i]+"\t");
 			}
@@ -129,6 +131,7 @@ public class Grafo {
 	public void display() {
 		System.out.println("=====Adyancencia=====");
 		for (int i=0;i<this.MatrizAdyancencia[0].length;i++) {
+			System.out.print(i+"=>\t");
 			for (int j=0;j<this.MatrizAdyancencia.length;j++) {
 				System.out.print(this.MatrizAdyancencia[j][i]+"\t");
 			}
