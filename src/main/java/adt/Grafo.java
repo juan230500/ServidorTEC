@@ -22,18 +22,115 @@ import com.google.gson.Gson;
  */
 public class Grafo {
 	int[][] MatrizAdyancencia;
+	int[][] MatrizFloydVértices;
+	int[][] MatrizFloydDistancias;
+	int maximo;
+	
 	
 	public Grafo(int tamaño) {
 		this.MatrizAdyancencia=new int[tamaño][tamaño];
+		this.MatrizFloydVértices=new int[tamaño][tamaño];
+		this.MatrizFloydDistancias=new int[tamaño][tamaño];
+		this.maximo=5;
 	}
+	/**
+	 * Incia las matrices de distancias y vértices
+	 * según el estado incial de floyd
+	 * para distancias iguales a cero se asigna un valor igual a la suma de dos máximos
+	 */
+	private void InciarFloyd() {
+		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
+			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
+				this.MatrizFloydVértices[i][j]=i;
+			}
+		}
+		int Distancia;
+		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
+			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
+				if (i!=j) {
+					Distancia=this.MatrizAdyancencia[i][j];
+					if (Distancia==0) {
+						Distancia=this.maximo*2;
+					}
+					this.MatrizFloydDistancias[i][j]=Distancia;
+				}
+			}
+		}
+	}
+	/**
+	 * Ejecuta el algoritmo de floyd conocido teoricamente por devolver una matriz
+	 * con las rutas más cortas de cualquier a cualquier vértice y tambíen otra
+	 * con las distancias que tomará esa ruta, estas dos matrices se almecan en el propio
+	 * grafo y después pueden pasarse a un xml para consultarse solo cuando el cliente pida una mejor ruta
+	 * 
+	 */
+	public void Floyd() {
+		InciarFloyd();
+		int k=0;
+		int i=0;
+		int j=0;
+		displayVertices();
+		for (k=0;k<maximo-1;k++) {
+			System.out.print("iteración"+k+")");
+			displayDistancias();
+			for (i=0;i<this.MatrizAdyancencia.length;i++) {
+				if (i==k) {
+					continue;
+				}
+				for (j=0;j<this.MatrizAdyancencia[0].length;j++) {
+					if (j==k || i==j) {
+						continue;
+					}
+					int opcional=this.MatrizFloydDistancias[k][j]+this.MatrizFloydDistancias[i][k];
+					if (opcional<this.MatrizFloydDistancias[i][j]) {
+						this.MatrizFloydDistancias[i][j]=opcional;
+						this.MatrizFloydVértices[i][j]=k;
+					}
+				}
+			}
+		}
+		displayVertices();
+	}
+	
+	/**
+	 * Método que hace un print de cada casilla de la matriz de vertices para floyd
+	 * con el fin de verificar sus valores a lo largo del desarrollo
+	 */
+	public void displayVertices() {
+		System.out.println("=====Vertices=====");
+		for (int i=0;i<this.MatrizFloydVértices[0].length;i++) {
+			for (int j=0;j<this.MatrizFloydVértices.length;j++) {
+				System.out.print(this.MatrizFloydVértices[j][i]+"\t");
+			}
+			System.out.println("");
+		}
+		System.out.println("==========");
+	}
+	
+	/**
+	 * Método que hace un print de cada casilla de la matriz de distancias para floyd
+	 * con el fin de verificar sus valores a lo largo del desarrollo
+	 */
+	public void displayDistancias() {
+		System.out.println("=====Distancias=====");
+		for (int i=0;i<this.MatrizFloydDistancias[0].length;i++) {
+			for (int j=0;j<this.MatrizFloydDistancias.length;j++) {
+				System.out.print(this.MatrizFloydDistancias[j][i]+"\t");
+			}
+			System.out.println("");
+		}
+		System.out.println("==========");
+	}
+	
 	/**
 	 * Método que hace un print de cada casilla de la matriz
 	 * con el fin de verificar sus valores a lo largo del desarrollo
 	 */
 	public void display() {
+		System.out.println("=====Adyancencia=====");
 		for (int i=0;i<this.MatrizAdyancencia[0].length;i++) {
 			for (int j=0;j<this.MatrizAdyancencia.length;j++) {
-				System.out.print(+this.MatrizAdyancencia[j][i]+"\t");
+				System.out.print(this.MatrizAdyancencia[j][i]+"\t");
 			}
 			System.out.println("");
 		}
@@ -46,7 +143,7 @@ public class Grafo {
 	public void AsignarAleatorios() {
 		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
 			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
-				this.MatrizAdyancencia[i][j]=ThreadLocalRandom.current().nextInt(0, 5);
+				this.MatrizAdyancencia[i][j]=ThreadLocalRandom.current().nextInt(0, this.maximo);
 			}
 		}
 	}
