@@ -74,15 +74,19 @@ public class Grafo {
        
         xmlOutput.setFormat(Format.getPrettyFormat());
 		try {
-			xmlOutput.output(doc, new FileWriter("/home/juan/Documentos/matriz.xml"));
+			xmlOutput.output(doc, new FileWriter("src/main/java/matriz.xml"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * A partir de un archivo xml almacenado junto al mismo código del servidor,
+	 * este método extrae la información en xml de una matriz de adyacencia en la actual
+	 * con el fin de no necesitar guardrse en una variable.
+	 */
 	public void inXML() {
-		File inputFile = new File("/home/juan/Documentos/matriz.xml");
+		File inputFile = new File("src/main/java/matriz.xml");
         SAXBuilder saxBuilder = new SAXBuilder();
         Document document = null;
         

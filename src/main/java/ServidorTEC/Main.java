@@ -8,7 +8,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		Grafo G=new Grafo(4);
 		G.display();
-		//G.toXML();
+		G.toXML();
 		G.inXML();
 		System.out.println("$");
 		G.display();
