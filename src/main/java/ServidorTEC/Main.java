@@ -12,7 +12,11 @@ public class Main {
 		//G.fromXML();
 		G.AsignarAleatorios();
 		G.Floyd();
+		G.toXML(0);
+		G.toXML(1);
+		G.toXML(2);
 		G.display();
+		G.ConsultarCamino(1, 4);
 	}
 
 }

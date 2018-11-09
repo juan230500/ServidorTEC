@@ -3,6 +3,7 @@ package adt;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.jdom2.Attribute;
@@ -31,7 +32,7 @@ public class Grafo {
 		this.MatrizAdyancencia=new int[tamaño][tamaño];
 		this.MatrizFloydVértices=new int[tamaño][tamaño];
 		this.MatrizFloydDistancias=new int[tamaño][tamaño];
-		this.maximo=5;
+		this.maximo=101;
 	}
 	/**
 	 * Incia las matrices de distancias y vértices
@@ -90,7 +91,30 @@ public class Grafo {
 				}
 			}
 		}
+		System.out.print("iteración"+k+")");
+		displayDistancias();
 		displayVertices();
+	}
+	
+	/**
+	 * Con la matriz de vértices del algorimo de floyd,
+	 * este método devuelve la lista de vértices a visitar
+	 * que optimicen los tiempos para llegar de un vértice a otro
+	 * @param inicio vertice de inicio
+	 * @param fin vvertice de destino
+	 * @return lista con los vertices a recorrer
+	 */
+	public LinkedList<Integer> ConsultarCamino(int inicio,int fin) {
+		LinkedList<Integer> L = new LinkedList<Integer>();
+		L.add(inicio);
+		int actual=inicio;
+		while (actual!=fin) {
+			actual=PosfromXML(fin, actual);
+			L.add(actual);
+		}
+		System.out.print(L.toString());
+		System.out.println("="+this.MatrizFloydDistancias[fin][inicio]+"s");
+		return L;
 	}
 	
 	/**
@@ -151,12 +175,31 @@ public class Grafo {
 		}
 	}
 	
+	
+	
 	/**
 	 * Crea un archivo xml con la matriz de adyacencia actual
-	 * para fines de almacenamiento
+	 * para fines de almacenamiento, el criterio indica que se puede guardar
+	 * tanto la matriz de adyacencia como la matriz de distancia o vértices
+	 * @param criterio entero que indica o que se va a almacenar
 	 */
-	public void toXML()  {
-		Element carsElement = new Element("matriz");
+	public void toXML(int criterio)  {
+		String nombre;
+		int[][] matriz;
+		if (criterio==0) {
+			nombre="matriz";
+			matriz=this.MatrizAdyancencia;
+		}
+		else if (criterio==1) {
+			nombre="vertices";
+			matriz=this.MatrizFloydVértices;
+		}
+		else {
+			nombre="distancias";
+			matriz=this.MatrizFloydDistancias;
+		}
+		
+		Element carsElement = new Element("nombre");
         Document doc = new Document(carsElement);
         
         Element columna;
@@ -167,7 +210,7 @@ public class Grafo {
         	doc.getRootElement().addContent(columna);
 			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
 				fila = new Element("F"+j);
-		        fila.setAttribute(new Attribute("peso",""+this.MatrizAdyancencia[i][j]));
+		        fila.setAttribute(new Attribute("peso",""+matriz[i][j]));
 		        columna.addContent(fila);
 			}
 		}
@@ -176,11 +219,30 @@ public class Grafo {
        
         xmlOutput.setFormat(Format.getPrettyFormat());
 		try {
-			xmlOutput.output(doc, new FileWriter("src/main/java/matriz.xml"));
+			xmlOutput.output(doc, new FileWriter("src/main/java/"+nombre+".xml"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public int PosfromXML(int i,int j) {
+		File inputFile = new File("src/main/java/vertices.xml");
+        SAXBuilder saxBuilder = new SAXBuilder();
+        Document document = null;
+        
+		try {
+			document = saxBuilder.build(inputFile);
+		} catch (JDOMException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        Element classElement = document.getRootElement();
+        
+        String ValorActual=classElement.getChild("C"+i).getChild("F"+j).getAttributeValue("peso");
+        
+        return Integer.parseInt(ValorActual);
 	}
 	/**
 	 * A partir de un archivo xml almacenado junto al mismo código del servidor,
