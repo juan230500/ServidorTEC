@@ -3,6 +3,7 @@ package adt;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -113,8 +114,26 @@ public class Grafo {
 			L.add(actual);
 		}
 		System.out.print(L.toString());
-		System.out.println("="+this.MatrizFloydDistancias[fin][inicio]+"s");
+		System.out.println("="+DistanciafromXML(inicio, fin)+"s");
 		return L;
+	}
+	
+	
+	
+	public int[] ConsultarOrdenAmigos(int[] ArrayAmigos){
+		int[] NuevoArrayAmigos = new int[ArrayAmigos.length-2];
+		int[] ArrayDistancias= new int[NuevoArrayAmigos.length];
+		int inicio=ArrayAmigos[0];
+		
+		for (int i=1;i<ArrayAmigos.length-1;i++) {
+			NuevoArrayAmigos[i-1]=ArrayAmigos[i];
+			ArrayDistancias[i-1]=DistanciafromXML(inicio,ArrayAmigos[i]);
+		}
+		
+		SelectionAmigos(ArrayDistancias, NuevoArrayAmigos);
+		System.out.println(Arrays.toString(NuevoArrayAmigos));
+		System.out.println(Arrays.toString(ArrayDistancias));
+		return NuevoArrayAmigos;
 	}
 	
 	/**
@@ -226,6 +245,39 @@ public class Grafo {
 		}
 	}
 	
+	/***
+	 *  Devuelve la distancia que se necesita para ir de un punto a otro
+	 *  obtenida con Floyd
+	 * @param fin columna
+	 * @param inicio fila
+	 * @return entero con la distancia
+	 */
+	public int DistanciafromXML(int inicio,int fin) {
+		File inputFile = new File("src/main/java/distancias.xml");
+        SAXBuilder saxBuilder = new SAXBuilder();
+        Document document = null;
+        
+		try {
+			document = saxBuilder.build(inputFile);
+		} catch (JDOMException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        Element classElement = document.getRootElement();
+        
+        String ValorActual=classElement.getChild("C"+fin).getChild("F"+inicio).getAttributeValue("peso");
+        
+        return Integer.parseInt(ValorActual);
+	}
+	
+	/**
+	 * Devuelve un numero en la matriz de vertices generada por Floyd
+	 * para consuktar el mejor camino
+	 * @param i columna
+	 * @param j fila
+	 * @return entero en esa posición
+	 */
 	public int PosfromXML(int i,int j) {
 		File inputFile = new File("src/main/java/vertices.xml");
         SAXBuilder saxBuilder = new SAXBuilder();
@@ -295,6 +347,32 @@ public class Grafo {
 	public void fromJson(String json){
 		Gson gson = new Gson();
 		this.MatrizAdyancencia=gson.fromJson(json, int[][].class);
+	}
+	
+	/**
+	 * Selectionsort que trabaja con las distancias de los amigos
+	 * hasta el destino y ordena el array de amigos para saber cual
+	 * recoger primero
+	 * @param arr distancias hasta el TEC
+	 * @param posiciones posiciones de los amigos
+	 */
+	public void SelectionAmigos(int[] arr,int[] posiciones) {
+		 for (int i = 0; i < arr.length - 1; i++)  
+	        {  
+	            int index = i;  
+	            for (int j = i + 1; j < arr.length; j++){  
+	                if (arr[j] < arr[index]){  
+	                    index = j;//searching for lowest index  
+	                }  
+	            }  
+	            int smallerNumber = arr[index];   
+	            arr[index] = arr[i];
+	            arr[i] = smallerNumber;
+	            
+	            int smallerNumber2 = posiciones[index];   
+	            posiciones[index] = posiciones[i];
+	            posiciones[i] = smallerNumber2;
+	        }  
 	}
 	
 }

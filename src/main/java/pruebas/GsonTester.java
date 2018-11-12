@@ -1,4 +1,4 @@
-package ServidorTEC;
+package pruebas;
 
 import java.util.Arrays;
 
