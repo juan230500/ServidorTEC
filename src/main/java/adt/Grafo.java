@@ -119,7 +119,12 @@ public class Grafo {
 	}
 	
 	
-	
+	/**
+	 * Método que devuelve un array con el mejor orden para recoger n amigos
+	 * pensando en ir primero por el más cercano
+	 * @param ArrayAmigos posicoines de los amigos
+	 * @return array con los lugares a pasar en orden
+	 */
 	public int[] ConsultarOrdenAmigos(int[] ArrayAmigos){
 		int[] NuevoArrayAmigos = new int[ArrayAmigos.length-2];
 		int[] ArrayDistancias= new int[NuevoArrayAmigos.length];
