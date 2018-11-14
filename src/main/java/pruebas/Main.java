@@ -14,9 +14,9 @@ public class Main {
 		//G.toXML();
 		//G.fromXML();
 		//G.AsignarAleatorios();
-		int[] L= {1,3,5,7,2};
+		int[] L= {1,11,23,3,2};
 		G.ConsultarOrdenAmigos(L);
-		G.ConsultarCamino(1, 3);
+		G.ConsultarCamino(3, 11);
 		/*G.Floyd();
 		G.toXML(0);
 		G.toXML(1);

@@ -126,18 +126,28 @@ public class Grafo {
 	 * @return array con los lugares a pasar en orden
 	 */
 	public int[] ConsultarOrdenAmigos(int[] ArrayAmigos){
+		System.out.println(Arrays.toString(ArrayAmigos));
 		int[] NuevoArrayAmigos = new int[ArrayAmigos.length-2];
-		int[] ArrayDistancias= new int[NuevoArrayAmigos.length];
-		int inicio=ArrayAmigos[0];
+		int[] ArrayTemporalAmigos=new int[NuevoArrayAmigos.length];
 		
 		for (int i=1;i<ArrayAmigos.length-1;i++) {
-			NuevoArrayAmigos[i-1]=ArrayAmigos[i];
-			ArrayDistancias[i-1]=DistanciafromXML(inicio,ArrayAmigos[i]);
+			ArrayTemporalAmigos[i-1]=ArrayAmigos[i];
 		}
 		
-		SelectionAmigos(ArrayDistancias, NuevoArrayAmigos);
+		int InicioActual=ArrayAmigos[0];
+		int[] Distancias;
+		int Menor;
+		
+		for (int j=0;j<NuevoArrayAmigos.length-1;j++) {
+			Distancias=this.ArrayDistancias(InicioActual, ArrayTemporalAmigos);
+			Menor= this.MenorIndex(Distancias);
+			InicioActual=ArrayTemporalAmigos[Menor];
+			NuevoArrayAmigos[j]=InicioActual;
+			ArrayTemporalAmigos=this.IgnorarIndex(ArrayTemporalAmigos, Menor);
+		}
+		NuevoArrayAmigos[NuevoArrayAmigos.length-1]=ArrayTemporalAmigos[0];
+		
 		System.out.println(Arrays.toString(NuevoArrayAmigos));
-		System.out.println(Arrays.toString(ArrayDistancias));
 		return NuevoArrayAmigos;
 	}
 	
@@ -361,23 +371,45 @@ public class Grafo {
 	 * @param arr distancias hasta el TEC
 	 * @param posiciones posiciones de los amigos
 	 */
-	public void SelectionAmigos(int[] arr,int[] posiciones) {
-		 for (int i = 0; i < arr.length - 1; i++)  
-	        {  
-	            int index = i;  
-	            for (int j = i + 1; j < arr.length; j++){  
-	                if (arr[j] < arr[index]){  
-	                    index = j;//searching for lowest index  
-	                }  
-	            }  
-	            int smallerNumber = arr[index];   
-	            arr[index] = arr[i];
-	            arr[i] = smallerNumber;
-	            
-	            int smallerNumber2 = posiciones[index];   
-	            posiciones[index] = posiciones[i];
-	            posiciones[i] = smallerNumber2;
-	        }  
+	public int MenorIndex(int[] arr) {
+        int index = 0;  
+        for (int j = 1; j < arr.length; j++){  
+            if (arr[j] < arr[index]){  
+                index = j;//searching for lowest index  
+            }  
+        }  
+        return index;
+	}
+	/**
+	 * Métodos que devuelve en nuevo array de la distancia 
+	 * desde un mismo inicio hasta varios lugares del array (enteros) 
+	 * para saber hacia cual es más coveniente ir en un principio
+	 * @param arr lugares posibles
+	 * @param inicio punto de partida
+	 * @return array con las distancias desde al inicio a cada punto del array
+	 */
+	public int[] ArrayDistancias(int inicio,int arr[]) {
+		int [] Distancias=new int[arr.length];
+		for (int i=0;i<arr.length;i++) {
+			Distancias[i]=this.DistanciafromXML(inicio,arr[i]);
+		}
+		return Distancias;
+	}
+	/**
+	 * Metodo que devuelve todo un array pero sin un índice
+	 * @param i inidece a omitir
+	 * @return el nuevo array
+	 */
+	public int[] IgnorarIndex(int[] arr,int index) {
+		int[] NuevoArr=new int[arr.length-1];
+		int j=0;
+		for(int i=0;i<arr.length;i++) {
+			if (i!=index) {
+				NuevoArr[j]=arr[i];
+				j++;
+			}
+		}
+		return NuevoArr;
 	}
 	
 }
