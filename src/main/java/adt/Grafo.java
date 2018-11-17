@@ -27,6 +27,7 @@ public class Grafo {
 	int[][] MatrizFloydVértices;
 	int[][] MatrizFloydDistancias;
 	int maximo;
+    SAXBuilder saxBuilder;
 	
 	
 	public Grafo(int tamaño) {
@@ -34,33 +35,21 @@ public class Grafo {
 		this.MatrizFloydVértices=new int[tamaño][tamaño];
 		this.MatrizFloydDistancias=new int[tamaño][tamaño];
 		this.maximo=101;
+		this.saxBuilder = new SAXBuilder();
 	}
 	/**
-	 * Incia las matrices de distancias y vértices
-	 * según el estado incial de floyd
-	 * para distancias iguales a cero se asigna un valor igual a la suma de dos máximos
+	 * Método que se encarga de recorrer cada casilla de la matriz
+	 * y colocar un aleatorio en cada posición
 	 */
-	private void InciarFloyd() {
+	public void AsignarAleatorios() {
 		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
 			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
-				this.MatrizFloydVértices[i][j]=i;
-			}
-		}
-		int Distancia;
-		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
-			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
-				if (i!=j) {
-					Distancia=this.MatrizAdyancencia[i][j];
-					if (Distancia==0) {
-						Distancia=1000;
-					}
-					this.MatrizFloydDistancias[i][j]=Distancia;
-				}
+				this.MatrizAdyancencia[i][j]=ThreadLocalRandom.current().nextInt(0, this.maximo);
 			}
 		}
 	}
 	/**
-	 * Ejecuta el algoritmo de floyd conocido teoricamente por devolver una matriz
+	* Ejecuta el algoritmo de floyd conocido teoricamente por devolver una matriz
 	 * con las rutas más cortas de cualquier a cualquier vértice y tambíen otra
 	 * con las distancias que tomará esa ruta, estas dos matrices se almecan en el propio
 	 * grafo y después pueden pasarse a un xml para consultarse solo cuando el cliente pida una mejor ruta
@@ -96,7 +85,76 @@ public class Grafo {
 		displayDistancias();
 		displayVertices();
 	}
+	 /**
+	 * Incia las matrices de distancias y vértices
+	 * según el estado incial de floyd
+	 * para distancias iguales a cero se asigna un valor igual a la suma de dos máximos
+	 */
+	private void InciarFloyd() {
+		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
+			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
+				this.MatrizFloydVértices[i][j]=i;
+			}
+		}
+		int Distancia;
+		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
+			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
+				if (i!=j) {
+					Distancia=this.MatrizAdyancencia[i][j];
+					if (Distancia==0) {
+						Distancia=1000;
+					}
+					this.MatrizFloydDistancias[i][j]=Distancia;
+				}
+			}
+		}
+	}
 	
+	/**
+	 * Reune todos los pasos necesarios para tomar un punto de partida, algunos amigos y un final
+	 * y devuelve una buena ruta y la distancia total.
+	 * @param Inicio partida del conductor
+	 * @param Fin TEC
+	 * @param ListaAmigos Paradas a realizar
+	 * @return
+	 */
+	public LinkedList<Integer> ConsultarCaminoAmigos(int Inicio,int Fin,LinkedList<Integer> ListaAmigos){
+		int[] ArrayDirecciones=AmigosToArray(Inicio,Fin,ListaAmigos);
+		this.OrdenarAmigos(ArrayDirecciones);
+		LinkedList<Integer> ListaTemporal;
+		LinkedList<Integer> ListaDireccionesFinal=new LinkedList<Integer>();
+		int DistanciaTotal=0;
+		
+		ListaDireccionesFinal.add(Inicio);
+		for (int i=0;i<ArrayDirecciones.length-1;i++) {
+			DistanciaTotal+=this.DistanciafromXML(ArrayDirecciones[i], ArrayDirecciones[i+1]);
+			ListaTemporal=ConsultarCamino(ArrayDirecciones[i],ArrayDirecciones[i+1]);
+			ListaTemporal.removeFirst();
+			ListaDireccionesFinal.addAll(ListaTemporal);
+		}
+		
+		System.out.println("$$$"+ListaDireccionesFinal.toString()+"="+DistanciaTotal+"s");
+		return ListaDireccionesFinal;
+	}
+	/**
+	 * Convierte un punto de partida, un final y una lista de amigos en un array
+	 * donde el primer elemento es el inicio y el ultimo es el final, el resto son amigos en desorden
+	 * esto facilitará ordenar el array con "OrdenarAmigos"
+	 * @param Inicio
+	 * @param Fin
+	 * @param ListaAmigos
+	 * @return array donde el primer elemento es el inicio y el ultimo es el final, el resto son amigos en desorden
+	 */
+	public int[] AmigosToArray(int Inicio,int Fin,LinkedList<Integer> ListaAmigos) {
+		int l=ListaAmigos.size();
+		int[] ArrayDirecciones=new int[l+2];
+		ArrayDirecciones[0]=Inicio;
+		for (int i=1;i<l+1;i++) {
+			ArrayDirecciones[i]=ListaAmigos.get(i-1);
+		}
+		ArrayDirecciones[l+1]=Fin;
+		return ArrayDirecciones;
+	}
 	/**
 	 * Con la matriz de vértices del algorimo de floyd,
 	 * este método devuelve la lista de vértices a visitar
@@ -110,45 +168,85 @@ public class Grafo {
 		L.add(inicio);
 		int actual=inicio;
 		while (actual!=fin) {
-			actual=PosfromXML(fin, actual);
+			actual=VerticefromXML(fin, actual);
 			L.add(actual);
 		}
-		System.out.print(L.toString());
-		System.out.println("="+DistanciafromXML(inicio, fin)+"s");
 		return L;
 	}
-	
 	
 	/**
 	 * Método que devuelve un array con el mejor orden para recoger n amigos
 	 * pensando en ir primero por el más cercano
-	 * @param ArrayAmigos posicoines de los amigos
+	 * @param ArrayDirecciones posicoines de los amigos
 	 * @return array con los lugares a pasar en orden
 	 */
-	public int[] ConsultarOrdenAmigos(int[] ArrayAmigos){
-		System.out.println(Arrays.toString(ArrayAmigos));
-		int[] NuevoArrayAmigos = new int[ArrayAmigos.length-2];
-		int[] ArrayTemporalAmigos=new int[NuevoArrayAmigos.length];
+	public int[] OrdenarAmigos(int[] ArrayDirecciones){
+		int l=ArrayDirecciones.length;
+		int[] NuevoArrayAmigos = new int[l];
+		int[] ArrayTemporalAmigos=new int[l];
 		
-		for (int i=1;i<ArrayAmigos.length-1;i++) {
-			ArrayTemporalAmigos[i-1]=ArrayAmigos[i];
+		for (int i=1;i<ArrayDirecciones.length-1;i++) {
+			ArrayTemporalAmigos[i-1]=ArrayDirecciones[i];
 		}
 		
-		int InicioActual=ArrayAmigos[0];
+		int InicioActual=ArrayDirecciones[0];
 		int[] Distancias;
 		int Menor;
 		
-		for (int j=0;j<NuevoArrayAmigos.length-1;j++) {
+		for (int j=0;j<l-2;j++) {
 			Distancias=this.ArrayDistancias(InicioActual, ArrayTemporalAmigos);
 			Menor= this.MenorIndex(Distancias);
 			InicioActual=ArrayTemporalAmigos[Menor];
-			NuevoArrayAmigos[j]=InicioActual;
+			ArrayDirecciones[j+1]=InicioActual;
 			ArrayTemporalAmigos=this.IgnorarIndex(ArrayTemporalAmigos, Menor);
 		}
-		NuevoArrayAmigos[NuevoArrayAmigos.length-1]=ArrayTemporalAmigos[0];
-		
-		System.out.println(Arrays.toString(NuevoArrayAmigos));
 		return NuevoArrayAmigos;
+	}
+	
+	/**
+	 * Devuelve el índice del menor elemento de un array
+	 * @param arr array dentro del cual se busca el menor
+	 * @return el índice de ese menor
+	 */
+	public int MenorIndex(int[] arr) {
+        int index = 0;  
+        for (int j = 1; j < arr.length; j++){  
+            if (arr[j] < arr[index]){  
+                index = j;//searching for lowest index  
+            }  
+        }  
+        return index;
+	}
+	/**
+	 * Métodos que devuelve en nuevo array de la distancia 
+	 * desde un mismo inicio hasta varios lugares del array (enteros) 
+	 * para saber hacia cual es más coveniente ir en un principio
+	 * @param arr lugares posibles
+	 * @param inicio punto de partida
+	 * @return array con las distancias desde al inicio a cada punto del array
+	 */
+	public int[] ArrayDistancias(int inicio,int arr[]) {
+		int [] Distancias=new int[arr.length];
+		for (int i=0;i<arr.length;i++) {
+			Distancias[i]=this.DistanciafromXML(inicio,arr[i]);
+		}
+		return Distancias;
+	}
+	/**
+	 * Metodo que devuelve todo un array pero sin un índice
+	 * @param i inidece a omitir
+	 * @return el nuevo array
+	 */
+	public int[] IgnorarIndex(int[] arr,int index) {
+		int[] NuevoArr=new int[arr.length-1];
+		int j=0;
+		for(int i=0;i<arr.length;i++) {
+			if (i!=index) {
+				NuevoArr[j]=arr[i];
+				j++;
+			}
+		}
+		return NuevoArr;
 	}
 	
 	/**
@@ -197,19 +295,6 @@ public class Grafo {
 		}
 		System.out.println("==========");
 	}
-	/**
-	 * Método que se encarga de recorrer cada casilla de la matriz
-	 * y colocar un aleatorio en cada posición
-	 */
-	public void AsignarAleatorios() {
-		for (int i=0;i<this.MatrizAdyancencia.length;i++) {
-			for (int j=0;j<this.MatrizAdyancencia[0].length;j++) {
-				this.MatrizAdyancencia[i][j]=ThreadLocalRandom.current().nextInt(0, this.maximo);
-			}
-		}
-	}
-	
-	
 	
 	/**
 	 * Crea un archivo xml con la matriz de adyacencia actual
@@ -259,9 +344,8 @@ public class Grafo {
 			e.printStackTrace();
 		}
 	}
-	
-	/***
-	 *  Devuelve la distancia que se necesita para ir de un punto a otro
+	/** 
+	 * Devuelve la distancia que se necesita para ir de un punto a otro
 	 *  obtenida con Floyd
 	 * @param fin columna
 	 * @param inicio fila
@@ -269,7 +353,7 @@ public class Grafo {
 	 */
 	public int DistanciafromXML(int inicio,int fin) {
 		File inputFile = new File("src/main/java/distancias.xml");
-        SAXBuilder saxBuilder = new SAXBuilder();
+        this.saxBuilder = new SAXBuilder();
         Document document = null;
         
 		try {
@@ -285,7 +369,6 @@ public class Grafo {
         
         return Integer.parseInt(ValorActual);
 	}
-	
 	/**
 	 * Devuelve un numero en la matriz de vertices generada por Floyd
 	 * para consuktar el mejor camino
@@ -293,9 +376,9 @@ public class Grafo {
 	 * @param j fila
 	 * @return entero en esa posición
 	 */
-	public int PosfromXML(int i,int j) {
+	public int VerticefromXML(int i,int j) {
 		File inputFile = new File("src/main/java/vertices.xml");
-        SAXBuilder saxBuilder = new SAXBuilder();
+        this.saxBuilder = new SAXBuilder();
         Document document = null;
         
 		try {
@@ -316,9 +399,9 @@ public class Grafo {
 	 * este método extrae la información en xml de una matriz de adyacencia en la actual
 	 * con el fin de no necesitar guardrse en una variable.
 	 */
-	public void fromXML() {
+	public void AdyacenciafromXML() {
 		File inputFile = new File("src/main/java/matriz.xml");
-        SAXBuilder saxBuilder = new SAXBuilder();
+        this.saxBuilder = new SAXBuilder();
         Document document = null;
         
 		try {
@@ -364,52 +447,5 @@ public class Grafo {
 		this.MatrizAdyancencia=gson.fromJson(json, int[][].class);
 	}
 	
-	/**
-	 * Selectionsort que trabaja con las distancias de los amigos
-	 * hasta el destino y ordena el array de amigos para saber cual
-	 * recoger primero
-	 * @param arr distancias hasta el TEC
-	 * @param posiciones posiciones de los amigos
-	 */
-	public int MenorIndex(int[] arr) {
-        int index = 0;  
-        for (int j = 1; j < arr.length; j++){  
-            if (arr[j] < arr[index]){  
-                index = j;//searching for lowest index  
-            }  
-        }  
-        return index;
-	}
-	/**
-	 * Métodos que devuelve en nuevo array de la distancia 
-	 * desde un mismo inicio hasta varios lugares del array (enteros) 
-	 * para saber hacia cual es más coveniente ir en un principio
-	 * @param arr lugares posibles
-	 * @param inicio punto de partida
-	 * @return array con las distancias desde al inicio a cada punto del array
-	 */
-	public int[] ArrayDistancias(int inicio,int arr[]) {
-		int [] Distancias=new int[arr.length];
-		for (int i=0;i<arr.length;i++) {
-			Distancias[i]=this.DistanciafromXML(inicio,arr[i]);
-		}
-		return Distancias;
-	}
-	/**
-	 * Metodo que devuelve todo un array pero sin un índice
-	 * @param i inidece a omitir
-	 * @return el nuevo array
-	 */
-	public int[] IgnorarIndex(int[] arr,int index) {
-		int[] NuevoArr=new int[arr.length-1];
-		int j=0;
-		for(int i=0;i<arr.length;i++) {
-			if (i!=index) {
-				NuevoArr[j]=arr[i];
-				j++;
-			}
-		}
-		return NuevoArr;
-	}
 	
 }

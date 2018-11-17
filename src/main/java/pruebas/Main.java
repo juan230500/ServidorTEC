@@ -9,14 +9,19 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Grafo G=new Grafo(30);
-		G.fromXML();
+		G.AdyacenciafromXML();
 		G.display();
 		//G.toXML();
 		//G.fromXML();
 		//G.AsignarAleatorios();
-		int[] L= {1,11,23,3,2};
-		G.ConsultarOrdenAmigos(L);
-		G.ConsultarCamino(3, 11);
+		LinkedList<Integer> Amigos=new LinkedList<Integer>();
+		Amigos.add(4);
+		Amigos.add(6);
+		Amigos.add(7);
+		int yo=2;
+		int tec=5;
+		G.ConsultarCamino(yo, tec);
+		G.ConsultarCaminoAmigos(yo, tec, Amigos);
 		/*G.Floyd();
 		G.toXML(0);
 		G.toXML(1);
