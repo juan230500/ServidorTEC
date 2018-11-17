@@ -171,6 +171,7 @@ public class Grafo {
 			actual=VerticefromXML(fin, actual);
 			L.add(actual);
 		}
+		System.out.println("$"+L.toString()+"="+this.DistanciafromXML(inicio, fin)+"s");
 		return L;
 	}
 	
@@ -182,8 +183,7 @@ public class Grafo {
 	 */
 	public int[] OrdenarAmigos(int[] ArrayDirecciones){
 		int l=ArrayDirecciones.length;
-		int[] NuevoArrayAmigos = new int[l];
-		int[] ArrayTemporalAmigos=new int[l];
+		int[] ArrayTemporalAmigos=new int[l-2];
 		
 		for (int i=1;i<ArrayDirecciones.length-1;i++) {
 			ArrayTemporalAmigos[i-1]=ArrayDirecciones[i];
@@ -200,7 +200,7 @@ public class Grafo {
 			ArrayDirecciones[j+1]=InicioActual;
 			ArrayTemporalAmigos=this.IgnorarIndex(ArrayTemporalAmigos, Menor);
 		}
-		return NuevoArrayAmigos;
+		return ArrayDirecciones;
 	}
 	
 	/**
@@ -432,7 +432,7 @@ public class Grafo {
 	 * en una string de formate json
 	 * @return la string en json
 	 */
-	public String toJson() {
+	public String MatriztoJson() {
 		Gson gson = new Gson();
 		String json=gson.toJson(this.MatrizAdyancencia);
 		return json;
@@ -442,10 +442,9 @@ public class Grafo {
 	 * una nueva matriz de adyancencia
 	 * @param json
 	 */
-	public void fromJson(String json){
+	public void MatrizfromJson(String json){
 		Gson gson = new Gson();
 		this.MatrizAdyancencia=gson.fromJson(json, int[][].class);
 	}
-	
 	
 }

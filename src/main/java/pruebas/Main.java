@@ -16,11 +16,11 @@ public class Main {
 		//G.AsignarAleatorios();
 		LinkedList<Integer> Amigos=new LinkedList<Integer>();
 		Amigos.add(4);
-		Amigos.add(6);
+		Amigos.add(29);
 		Amigos.add(7);
 		int yo=2;
 		int tec=5;
-		G.ConsultarCamino(yo, tec);
+		G.ConsultarCamino(1, 29);
 		G.ConsultarCaminoAmigos(yo, tec, Amigos);
 		/*G.Floyd();
 		G.toXML(0);
