@@ -22,6 +22,9 @@ public class Main {
 		int tec=5;
 		G.ConsultarCamino(1, 29);
 		G.ConsultarCaminoAmigos(yo, tec, Amigos);
+		
+		Cliente C=new Cliente();
+		C.CaminoFromJson(G.CaminoToJson());
 		/*G.Floyd();
 		G.toXML(0);
 		G.toXML(1);

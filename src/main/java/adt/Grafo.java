@@ -28,7 +28,11 @@ public class Grafo {
 	int[][] MatrizFloydDistancias;
 	int maximo;
     SAXBuilder saxBuilder;
-	
+    LinkedList<Integer> MejorUltimaRuta;
+    
+	public Grafo() {
+		
+	}
 	
 	public Grafo(int tamaño) {
 		this.MatrizAdyancencia=new int[tamaño][tamaño];
@@ -36,7 +40,9 @@ public class Grafo {
 		this.MatrizFloydDistancias=new int[tamaño][tamaño];
 		this.maximo=101;
 		this.saxBuilder = new SAXBuilder();
+		this.MejorUltimaRuta=new LinkedList<Integer>();
 	}
+	
 	/**
 	 * Método que se encarga de recorrer cada casilla de la matriz
 	 * y colocar un aleatorio en cada posición
@@ -119,12 +125,15 @@ public class Grafo {
 	 * @return
 	 */
 	public LinkedList<Integer> ConsultarCaminoAmigos(int Inicio,int Fin,LinkedList<Integer> ListaAmigos){
+		if (ListaAmigos==null) {
+			this.MejorUltimaRuta=ConsultarCamino(Inicio, Fin);
+			return this.MejorUltimaRuta;
+		}
 		int[] ArrayDirecciones=AmigosToArray(Inicio,Fin,ListaAmigos);
 		this.OrdenarAmigos(ArrayDirecciones);
 		LinkedList<Integer> ListaTemporal;
 		LinkedList<Integer> ListaDireccionesFinal=new LinkedList<Integer>();
 		int DistanciaTotal=0;
-		
 		ListaDireccionesFinal.add(Inicio);
 		for (int i=0;i<ArrayDirecciones.length-1;i++) {
 			DistanciaTotal+=this.DistanciafromXML(ArrayDirecciones[i], ArrayDirecciones[i+1]);
@@ -132,8 +141,8 @@ public class Grafo {
 			ListaTemporal.removeFirst();
 			ListaDireccionesFinal.addAll(ListaTemporal);
 		}
-		
 		System.out.println("$$$"+ListaDireccionesFinal.toString()+"="+DistanciaTotal+"s");
+		this.MejorUltimaRuta=ListaDireccionesFinal;
 		return ListaDireccionesFinal;
 	}
 	/**
@@ -181,7 +190,7 @@ public class Grafo {
 	 * @param ArrayDirecciones posicoines de los amigos
 	 * @return array con los lugares a pasar en orden
 	 */
-	public int[] OrdenarAmigos(int[] ArrayDirecciones){
+	public void OrdenarAmigos(int[] ArrayDirecciones){
 		int l=ArrayDirecciones.length;
 		int[] ArrayTemporalAmigos=new int[l-2];
 		
@@ -200,7 +209,6 @@ public class Grafo {
 			ArrayDirecciones[j+1]=InicioActual;
 			ArrayTemporalAmigos=this.IgnorarIndex(ArrayTemporalAmigos, Menor);
 		}
-		return ArrayDirecciones;
 	}
 	
 	/**
@@ -429,22 +437,24 @@ public class Grafo {
 	}
 	/**
 	 * Convierte la matriz de adyancencia del grafo
-	 * en una string de formate json
+	 * en una string de formato json
 	 * @return la string en json
 	 */
-	public String MatriztoJson() {
+	public String MatrizToJson() {
 		Gson gson = new Gson();
 		String json=gson.toJson(this.MatrizAdyancencia);
 		return json;
 	}
-	/**
-	 * A partir de una string en formato json se obtiene
-	 * una nueva matriz de adyancencia
-	 * @param json
+	/***
+	 * Convierte el ultimo mejor camino del grafo
+	 * en una string de formato json
+	 * @return la string en json
 	 */
-	public void MatrizfromJson(String json){
+	public String CaminoToJson() {
 		Gson gson = new Gson();
-		this.MatrizAdyancencia=gson.fromJson(json, int[][].class);
+		String json=gson.toJson(this.MejorUltimaRuta);
+		return json;
 	}
+	
 	
 }
