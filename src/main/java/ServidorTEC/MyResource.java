@@ -1,7 +1,5 @@
 package ServidorTEC;
 
-import adt.Grafo;
-
 import java.util.Map;
 
 import javax.ws.rs.FormParam;
@@ -12,6 +10,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
+
+import lógica.Grafo;
 
 /**
  * Root resource (exposed at "myresource" path)

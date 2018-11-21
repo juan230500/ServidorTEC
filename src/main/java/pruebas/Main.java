@@ -2,7 +2,7 @@ package pruebas;
 
 import java.util.LinkedList;
 
-import adt.Grafo;
+import lógica.Grafo;
 
 public class Main {
 
