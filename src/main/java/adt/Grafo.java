@@ -408,7 +408,7 @@ public class Grafo {
 	 * con el fin de no necesitar guardrse en una variable.
 	 */
 	public void AdyacenciafromXML() {
-		File inputFile = new File("src/main/java/matriz.xml");
+		File inputFile = new File("/home/juan/eclipse-workspace/ServidorTEC/src/main/java/matriz.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -418,7 +418,6 @@ public class Grafo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
         Element classElement = document.getRootElement();
         
         Element ColumnaActual;
