@@ -2,10 +2,15 @@ package ServidorTEC;
 
 import adt.Grafo;
 
+import java.util.Map;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import com.google.gson.Gson;
 
 /**
  * Root resource (exposed at "myresource" path)
@@ -32,4 +37,12 @@ public class MyResource {
     	G.AdyacenciafromXML();
     	return G.MatrizToJson();
     }
+    
+    @POST
+    @Path("Mapa1")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void Mapa1(Map<String,String> M) {
+    	System.out.println(M.toString());
+    }
+    
 }

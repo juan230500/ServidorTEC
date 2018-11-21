@@ -16,6 +16,16 @@ public class MainCliente {
 	          .request(MediaType.APPLICATION_JSON)
 	          .get(String.class);
 	    
+	    
+	    System.out.println(RequestMapa);
+	    
+	    String REST_URI1  = "http://192.168.100.4:8080/ServidorTEC/webapi/myresource/Mapa1";
+	    
+	    String RequestMapa1=client
+		          .target(REST_URI)
+		          .request(MediaType.APPLICATION_JSON)
+		          .get(String.class);
+	    
 	    System.out.println(RequestMapa);
 	}
 
