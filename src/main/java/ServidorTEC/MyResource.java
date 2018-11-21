@@ -34,7 +34,7 @@ public class MyResource {
     @Path("Mapa")
     @Produces(MediaType.APPLICATION_JSON)
     public String Mapa() {
-    	Grafo G=new Grafo(30);
+    	Grafo G=new Grafo(31);
     	G.AdyacenciafromXML();
     	return G.MatrizToJson();
     }
