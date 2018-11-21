@@ -4,6 +4,7 @@ import adt.Grafo;
 
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,12 +38,11 @@ public class MyResource {
     	G.AdyacenciafromXML();
     	return G.MatrizToJson();
     }
-    
     @POST
-    @Path("Mapa1")
+    @Path("Residencia")
     @Produces(MediaType.APPLICATION_JSON)
-    public void Mapa1(Map<String,String> M) {
-    	System.out.println(M.toString());
+    public void Mapa1(@FormParam("Residencia") String name) {
+    	System.out.println(name);
     }
     
 }
