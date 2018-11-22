@@ -13,7 +13,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
+/**
+ * 
+ * @author juan
+ *
+ */
 public class HiloViaje implements Runnable {
 	long tInicial;
 	long tFinal;
@@ -25,7 +29,6 @@ public class HiloViaje implements Runnable {
 		tInicial=System.currentTimeMillis();
 		tFinal=Duracion*1000;
 		period=1000;
-		
         try {
         	File inputFile = new File("src/main/java/viajes.xml");
             SAXBuilder saxBuilder = new SAXBuilder();

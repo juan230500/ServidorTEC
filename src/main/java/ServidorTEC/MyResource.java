@@ -54,7 +54,7 @@ public class MyResource {
     	System.out.println("++"+Residencia);
     	A.GuardarResidencia(Carne, Residencia);
     	A.SumarViaje(Carne);
-    	
+    	A.Top5();
     }
     
     @POST

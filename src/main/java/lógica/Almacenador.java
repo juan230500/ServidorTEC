@@ -3,6 +3,7 @@ package lógica;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,44 +18,47 @@ import org.jdom2.output.XMLOutputter;
 
 
 public class Almacenador {
+	String RutaCarne="/home/juan/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml";
+	String RutaEspera="/home/juan/eclipse-workspace/ServidorTEC/src/main/java/espera.xml";
+	
 	/**
-	 * 
-	 * @return
+	 * Lee el array de carnés, obtiene los cinco conductores con más viajes y
+	 * devuelve sus carnes en orden
+	 * @return Array con los carnes en orden de mayor a menor
 	 */
 	public String[] Top5() {
 		List<Element> L;
+		LinkedList<Element> LE=new LinkedList<Element>();
 		String[] Top=new String[5];
 		try {
-			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 			L=rootElement.getChildren();
-	        if (L.size()>5) {
+			for (int k=0;k<L.size();k++) {
+				LE.add(L.get(k));
+    			}
 	        	Element supercarElement;
-	        	for (int i=0;i<5;i++) {
-	        		int mayor=20;
-	        		for (int j=0;j<L.size();j++) {
-	        			supercarElement=L.get(j);
-	        			if(Integer.parseInt(supercarElement.getAttributeValue("Viajes"))>mayor){
-	        				Top[i]=supercarElement.getAttributeValue("Viajes");
-	        				
+	        	for (int i=0;i<5 && i<L.size();i++) {
+	        		int mayor=-1;
+	        		int index=0;
+	        		for (int j=i;j<LE.size();j++) {
+	        			supercarElement=LE.get(j);
+	        			int tmp=Integer.parseInt(supercarElement.getAttributeValue("Viajes"));
+	        			if(tmp>mayor){
+	        				mayor=tmp;
+	        				index=j;
 	        			}
 		        	}
+	        		Element Etmp=LE.get(i);
+	        		LE.set(i, LE.get(index));
+	        		LE.set(index, Etmp);
+	        		Top[i]=LE.get(i).getName();
 	        	}
-	        	supercarElement.setAttribute("Viajes", ""+(Integer.parseInt(supercarElement.getAttributeValue("Viajes")+1)));
-		        
-	        }
-	        else {
-	        	Element supercarElement;
-	        	for (int i=0;i<L.size();i++) {
-	        		supercarElement=L.get(i);
-	        		Top[i]=supercarElement.getAttributeValue("Viajes");
-	        	}
-	        }
 	        XMLOutputter xmlOutput = new XMLOutputter();
 	        xmlOutput.setFormat(Format.getPrettyFormat());
-	        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+	        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,25 +66,25 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return L;
+		return Top;
 	}
 	/**
-	 * 
-	 * @param Carne
-	 * @return
+	 * Suma un viaje más a algún carné
+	 * @param Carne carné a sumar el viaje
+	 * @return false,si no existe ese carne, true de lo contrario
 	 */
 	public String SumarViaje(String Carne) {
 		try {
-			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 	        if (rootElement.getChild("E"+Carne)!=null) {
 	        	Element supercarElement=rootElement.getChild("E"+Carne);
-	        	supercarElement.setAttribute("Viajes", ""+(Integer.parseInt(supercarElement.getAttributeValue("Viajes")+1)));
+	        	supercarElement.setAttribute("Viajes", ""+(Integer.parseInt(supercarElement.getAttributeValue("Viajes"))+1));
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		        return "1";
 	        }
 	        else {
@@ -104,7 +108,7 @@ public class Almacenador {
 	 */
 	public String PonerEnEspera(String Carne, String Residencia) {
 		try {
-        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml");
+        	File inputFile = new File(RutaEspera);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -114,7 +118,7 @@ public class Almacenador {
 		        doc.getRootElement().addContent(supercarElement);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml"));
+		        xmlOutput.output(doc, new FileWriter(RutaEspera));
 		        return "1";
 			}
 			else {
@@ -139,7 +143,7 @@ public class Almacenador {
 	 */
 	public String SacarDeEspera(String Carne) {
 		try {
-        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml");
+        	File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -147,7 +151,7 @@ public class Almacenador {
 				rootElement.removeChild("E"+Carne);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml"));
+		        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		        return "1";
 			}
 			else {
@@ -171,7 +175,7 @@ public class Almacenador {
 	 */
 	public String AgregarAmigo(String CarnePropio,String CarneAmigo) {
 		try {
-			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -181,7 +185,7 @@ public class Almacenador {
 		        supercarElement.addContent(nuevoamigo);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		        return "1";
 	        }
 	        else {
@@ -204,7 +208,7 @@ public class Almacenador {
 	 */
 	public int ConsultarResidencia(String Carne) {
 		try {
-        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+        	File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -226,7 +230,7 @@ public class Almacenador {
 	 */
 	public String GuardarCarne(String Carne) {
 		try {
-        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+        	File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -236,7 +240,7 @@ public class Almacenador {
 		        doc.getRootElement().addContent(supercarElement);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		        return "1";
 			}
 			else {
@@ -259,7 +263,7 @@ public class Almacenador {
 	 */
 	public void GuardarResidencia(String Carne,String Residencia) {
 		try {
-			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
@@ -267,7 +271,7 @@ public class Almacenador {
 	        supercarElement.setAttribute("Residencia", Residencia);
 	        XMLOutputter xmlOutput = new XMLOutputter();
 	        xmlOutput.setFormat(Format.getPrettyFormat());
-	        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+	        xmlOutput.output(doc, new FileWriter(RutaCarne));
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
