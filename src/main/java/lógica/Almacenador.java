@@ -16,6 +16,40 @@ import org.jdom2.output.XMLOutputter;
 
 public class Almacenador {
 	/**
+	 * Agrega un amigo sobre un carne ya guardado en el xml
+	 * @param CarnePropio carne del conductor
+	 * @param CarneAmigo carne del nuevo amigo
+	 * @return false si ya eran amigos, true si no
+	 */
+	public String AgregarAmigo(String CarnePropio,String CarneAmigo) {
+		try {
+			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        Element supercarElement = rootElement.getChild("E"+CarnePropio);
+	        if (supercarElement.getChild("E"+CarneAmigo)==null) {
+	        	Element nuevoamigo=new Element("E"+CarneAmigo);
+		        supercarElement.addContent(nuevoamigo);
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		        return "1";
+	        }
+	        else {
+	        	return "0";
+	        }
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
 	 * Lee el archivo de carnes y busca la residencia de alguno
 	 * @param Carne del cual consultar residencia
 	 * @return int con la residencia
@@ -27,7 +61,7 @@ public class Almacenador {
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 	        Element supercarElement = rootElement.getChild("E"+Carne);
-	        return Integer.parseInt(supercarElement.getText());
+	        return Integer.parseInt(supercarElement.getAttributeValue("Residencia"));
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,7 +76,7 @@ public class Almacenador {
 	 * @param Carne carne a agregar
 	 * @return true si es nuevo carne
 	 */
-	public boolean GuardarCarne(String Carne) {
+	public String GuardarCarne(String Carne) {
 		try {
         	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -54,10 +88,10 @@ public class Almacenador {
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
 		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
-		        return true;
+		        return "1";
 			}
 			else {
-				return false;
+				return "0";
 			}
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
@@ -66,7 +100,7 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return "0";
 		
 	}
 	/**
@@ -81,7 +115,7 @@ public class Almacenador {
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 	        Element supercarElement = rootElement.getChild("E"+Carne);
-	        supercarElement.setText(Residencia);
+	        supercarElement.setAttribute("Residencia", Residencia);
 	        XMLOutputter xmlOutput = new XMLOutputter();
 	        xmlOutput.setFormat(Format.getPrettyFormat());
 	        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));

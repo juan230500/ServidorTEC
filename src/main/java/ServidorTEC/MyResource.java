@@ -22,6 +22,7 @@ import lógica.Grafo;
  */
 @Path("myresource")
 public class MyResource {
+	Almacenador A=new Almacenador();
 	
 	@GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -42,6 +43,15 @@ public class MyResource {
     	G.AdyacenciafromXML();
     	return G.MatrizToJson();
     }
+    
+    @POST
+    @Path("NuevoAmigo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String NuevoAmigo(@FormParam("Conductor") String CarneConductor,@FormParam("Amigo") String CarneAmigo) {
+    	System.out.println("Se agrega a "+CarneAmigo+" como un amigo de "+CarneConductor);
+    	return A.AgregarAmigo(CarneConductor, CarneAmigo);
+    }
+    
     @POST
     @Path("Residencia")
     @Produces(MediaType.APPLICATION_JSON)
@@ -52,10 +62,10 @@ public class MyResource {
     @POST
     @Path("Carne")
     @Produces(MediaType.APPLICATION_JSON)
-    public void Carne(@FormParam("Carne") String Carne) {
+    public String Carne(@FormParam("Carne") String Carne) {
     	System.out.println(Carne);
     	Almacenador A=new Almacenador();
-    	A.GuardarCarne(Carne);
+    	return A.GuardarCarne(Carne);
     }
     
     @POST
@@ -63,7 +73,7 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String Ruta(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
     	System.out.println(Carne);
-    	Almacenador A=new Almacenador();
+    	Almacenador A=new Almacenador(); 
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
     	G.AdyacenciafromXML();
