@@ -53,9 +53,15 @@ public class MyResource {
     public void Residencia(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
     	System.out.println("++"+Residencia);
     	A.GuardarResidencia(Carne, Residencia);
-    	A.SumarViaje(Carne);
-    	A.Top5();
     }
+    
+    @GET
+    @Path("Top5")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Top5() {
+    	return A.Top5();
+    }
+    
     
     @POST
     @Path("Carne")

@@ -16,6 +16,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import com.google.gson.Gson;
+
 
 public class Almacenador {
 	String RutaCarne="/home/juan/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml";
@@ -26,10 +28,11 @@ public class Almacenador {
 	 * devuelve sus carnes en orden
 	 * @return Array con los carnes en orden de mayor a menor
 	 */
-	public String[] Top5() {
+	public String Top5() {
 		List<Element> L;
 		LinkedList<Element> LE=new LinkedList<Element>();
 		String[] Top=new String[5];
+		String[] Viajes=new String[5];
 		try {
 			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -55,6 +58,7 @@ public class Almacenador {
 	        		LE.set(i, LE.get(index));
 	        		LE.set(index, Etmp);
 	        		Top[i]=LE.get(i).getName();
+	        		Viajes[i]=""+mayor;
 	        	}
 	        XMLOutputter xmlOutput = new XMLOutputter();
 	        xmlOutput.setFormat(Format.getPrettyFormat());
@@ -66,7 +70,9 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return Top;
+		String[][] S= {Top,Viajes};
+		Gson gson=new Gson();
+		return gson.toJson(S);
 	}
 	/**
 	 * Suma un viaje más a algún carné
