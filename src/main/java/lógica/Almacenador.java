@@ -3,6 +3,8 @@ package lógica;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.jdom2.output.Format;
 import org.jdom2.Attribute;
@@ -15,8 +17,57 @@ import org.jdom2.output.XMLOutputter;
 
 
 public class Almacenador {
-	/*
+	/**
 	 * 
+	 * @return
+	 */
+	public String[] Top5() {
+		List<Element> L;
+		String[] Top=new String[5];
+		try {
+			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			L=rootElement.getChildren();
+	        if (L.size()>5) {
+	        	Element supercarElement;
+	        	for (int i=0;i<5;i++) {
+	        		int mayor=20;
+	        		for (int j=0;j<L.size();j++) {
+	        			supercarElement=L.get(j);
+	        			if(Integer.parseInt(supercarElement.getAttributeValue("Viajes"))>mayor){
+	        				Top[i]=supercarElement.getAttributeValue("Viajes");
+	        				
+	        			}
+		        	}
+	        	}
+	        	supercarElement.setAttribute("Viajes", ""+(Integer.parseInt(supercarElement.getAttributeValue("Viajes")+1)));
+		        
+	        }
+	        else {
+	        	Element supercarElement;
+	        	for (int i=0;i<L.size();i++) {
+	        		supercarElement=L.get(i);
+	        		Top[i]=supercarElement.getAttributeValue("Viajes");
+	        	}
+	        }
+	        XMLOutputter xmlOutput = new XMLOutputter();
+	        xmlOutput.setFormat(Format.getPrettyFormat());
+	        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return L;
+	}
+	/**
+	 * 
+	 * @param Carne
+	 * @return
 	 */
 	public String SumarViaje(String Carne) {
 		try {
