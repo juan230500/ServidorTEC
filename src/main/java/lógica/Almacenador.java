@@ -15,6 +15,35 @@ import org.jdom2.output.XMLOutputter;
 
 
 public class Almacenador {
+	/*
+	 * 
+	 */
+	public String SumarViaje(String Carne) {
+		try {
+			File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml");
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        if (rootElement.getChild("E"+Carne)!=null) {
+	        	Element supercarElement=rootElement.getChild("E"+Carne);
+	        	supercarElement.setAttribute("Viajes", ""+(Integer.parseInt(supercarElement.getAttributeValue("Viajes")+1)));
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml"));
+		        return "1";
+	        }
+	        else {
+	        	return "0";
+	        }
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
 	/**
 	 * Guarda al estudiante en una lsita de espera [para que lo regoja cualquiera que le quede de camino
 	 * si ya se habia guardado no se repite
@@ -152,6 +181,7 @@ public class Almacenador {
 			Element rootElement = doc.getRootElement();
 			if (rootElement.getChild("E"+Carne)==null) {
 				Element supercarElement = new Element("E"+Carne);
+				supercarElement.setAttribute("Viajes", "0");
 		        doc.getRootElement().addContent(supercarElement);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());

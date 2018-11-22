@@ -51,14 +51,17 @@ public class MyResource {
     @Path("Residencia")
     @Produces(MediaType.APPLICATION_JSON)
     public void Residencia(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
+    	System.out.println("++"+Residencia);
     	A.GuardarResidencia(Carne, Residencia);
+    	A.SumarViaje(Carne);
+    	
     }
     
     @POST
     @Path("Carne")
     @Produces(MediaType.APPLICATION_JSON)
     public String Carne(@FormParam("Carne") String Carne) {
-    	System.out.println("Se agrega el cane "+Carne);
+    	System.out.println("Se agrega el carne "+Carne);
     	Almacenador A=new Almacenador();
     	return A.GuardarCarne(Carne);
     }
