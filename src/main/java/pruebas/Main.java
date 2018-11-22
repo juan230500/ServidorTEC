@@ -9,7 +9,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Grafo G=new Grafo(31);
-		G.AdyacenciafromXML();
+		//G.AdyacenciafromXML();
 		G.display();
 		//G.toXML();
 		//G.fromXML();
@@ -19,7 +19,7 @@ public class Main {
 		Amigos.add(29);
 		Amigos.add(7);
 		int yo=2;
-		int tec=5;
+		int tec=0;
 		G.ConsultarCamino(1, 29);
 		G.ConsultarCaminoAmigos(yo, tec, Amigos);
 		

@@ -8,10 +8,16 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 
+import lógica.Almacenador;
+
 public class MainCliente {
 
 	public static void main(String[] args) {
-		String REST_URI  = "http://192.168.100.4:8080/ServidorTEC/webapi/myresource/Mapa";
+		Almacenador A=new Almacenador();
+		A.GuardarCarne("2018135360");
+		A.GuardarResidencia("2018135360","4");
+		System.out.println(A.ConsultarResidencia("2018135360"));
+		/*String REST_URI  = "http://192.168.100.4:8080/ServidorTEC/webapi/myresource/Mapa";
 	  
 	    Client client = ClientBuilder.newClient();
 	 
@@ -21,7 +27,7 @@ public class MainCliente {
 	          .get(String.class);
 	    
 	    
-	    System.out.println(RequestMapa);
+	    System.out.println(RequestMapa);*/
 	}
 
 }

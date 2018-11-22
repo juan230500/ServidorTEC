@@ -1,7 +1,10 @@
 package ServidorTEC;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
 
+import lógica.Almacenador;
 import lógica.Grafo;
 
 /**
@@ -41,8 +45,31 @@ public class MyResource {
     @POST
     @Path("Residencia")
     @Produces(MediaType.APPLICATION_JSON)
-    public void Mapa1(@FormParam("Residencia") String name) {
+    public void Residencia(@FormParam("Residencia") String name) {
     	System.out.println(name);
     }
+    
+    @POST
+    @Path("Carne")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void Carne(@FormParam("Carne") String Carne) {
+    	System.out.println(Carne);
+    	Almacenador A=new Almacenador();
+    	A.GuardarCarne(Carne);
+    }
+    
+    @POST
+    @Path("Ruta")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Ruta(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
+    	System.out.println(Carne);
+    	Almacenador A=new Almacenador();
+    	Grafo G=new Grafo(31);
+    	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
+    	G.AdyacenciafromXML();
+    	G.display();
+    	return G.CaminoToJson();
+    }
+    
     
 }

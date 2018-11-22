@@ -29,6 +29,15 @@ public class Grafo {
 	int maximo;
     SAXBuilder saxBuilder;
     LinkedList<Integer> MejorUltimaRuta;
+    LinkedList<Integer> Tiempos;
+    
+    public LinkedList<Integer> getMejorUltimaRuta(){
+    	return MejorUltimaRuta;
+    }
+    
+    public LinkedList<Integer> getTiempos(){
+    	return Tiempos;
+    }
     
 	public Grafo() {
 		
@@ -41,6 +50,7 @@ public class Grafo {
 		this.maximo=101;
 		this.saxBuilder = new SAXBuilder();
 		this.MejorUltimaRuta=new LinkedList<Integer>();
+		this.Tiempos=new LinkedList<Integer>();
 	}
 	
 	/**
@@ -127,6 +137,7 @@ public class Grafo {
 	public LinkedList<Integer> ConsultarCaminoAmigos(int Inicio,int Fin,LinkedList<Integer> ListaAmigos){
 		if (ListaAmigos==null) {
 			this.MejorUltimaRuta=ConsultarCamino(Inicio, Fin);
+			GuardarTiempos();
 			return this.MejorUltimaRuta;
 		}
 		int[] ArrayDirecciones=AmigosToArray(Inicio,Fin,ListaAmigos);
@@ -143,8 +154,16 @@ public class Grafo {
 		}
 		System.out.println("$$$"+ListaDireccionesFinal.toString()+"="+DistanciaTotal+"s");
 		this.MejorUltimaRuta=ListaDireccionesFinal;
+		GuardarTiempos();
 		return ListaDireccionesFinal;
 	}
+	
+	public void GuardarTiempos() {
+		for (int i=0;i<MejorUltimaRuta.size()-1;i++) {
+			Tiempos.add(this.DistanciafromXML(MejorUltimaRuta.get(i), MejorUltimaRuta.get(i+1)));
+		}
+	}
+	
 	/**
 	 * Convierte un punto de partida, un final y una lista de amigos en un array
 	 * donde el primer elemento es el inicio y el ultimo es el final, el resto son amigos en desorden
@@ -360,7 +379,7 @@ public class Grafo {
 	 * @return entero con la distancia
 	 */
 	public int DistanciafromXML(int inicio,int fin) {
-		File inputFile = new File("src/main/java/distancias.xml");
+		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/distancias.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -385,7 +404,7 @@ public class Grafo {
 	 * @return entero en esa posición
 	 */
 	public int VerticefromXML(int i,int j) {
-		File inputFile = new File("src/main/java/vertices.xml");
+		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/vertices.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -408,7 +427,7 @@ public class Grafo {
 	 * con el fin de no necesitar guardrse en una variable.
 	 */
 	public void AdyacenciafromXML() {
-		File inputFile = new File("/home/juan/eclipse-workspace/ServidorTEC/src/main/java/matriz.xml");
+		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/matriz.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -431,6 +450,7 @@ public class Grafo {
 				ValorActual=FilaActual.getAttributeValue("peso");
 				n=Integer.parseInt(ValorActual);
 				this.MatrizAdyancencia[i][j]=n;
+				
 			}
 		}
 	}
@@ -451,8 +471,11 @@ public class Grafo {
 	 */
 	public String CaminoToJson() {
 		Gson gson = new Gson();
-		String json=gson.toJson(this.MejorUltimaRuta);
-		return json;
+		LinkedList<LinkedList<Integer>> L=new LinkedList<LinkedList<Integer>>();
+		L.add(this.MejorUltimaRuta);
+		L.add(this.Tiempos);
+		System.out.println(L.toString());
+		return gson.toJson(L);
 	}
 	
 	
