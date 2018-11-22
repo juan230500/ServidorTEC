@@ -16,6 +16,74 @@ import org.jdom2.output.XMLOutputter;
 
 public class Almacenador {
 	/**
+	 * Guarda al estudiante en una lsita de espera [para que lo regoja cualquiera que le quede de camino
+	 * si ya se habia guardado no se repite
+	 * @param Carne
+	 * @param Residencia
+	 * @return
+	 */
+	public String PonerEnEspera(String Carne, String Residencia) {
+		try {
+        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml");
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			if (rootElement.getChild("E"+Carne)==null) {
+				Element supercarElement = new Element("E"+Carne);
+				supercarElement.setAttribute("Residencia", Residencia);
+		        doc.getRootElement().addContent(supercarElement);
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml"));
+		        return "1";
+			}
+			else {
+				return "0";
+			}
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
+	 * Una vez que el estudiante recibe un conductor, se saca de la lsita de espera
+	 * para dar campo a otros estudiantes
+	 * @param Carne Carne del estudiante
+	 * @param Residencia residencia del estudiante
+	 * @return falso si ni siquera estaba en la lista, true si no
+	 */
+	public String SacarDeEspera(String Carne) {
+		try {
+        	File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml");
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			if (rootElement.getChild("E"+Carne)!=null) {
+				rootElement.removeChild("E"+Carne);
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/espera.xml"));
+		        return "1";
+			}
+			else {
+				return "0";
+			}
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
 	 * Agrega un amigo sobre un carne ya guardado en el xml
 	 * @param CarnePropio carne del conductor
 	 * @param CarneAmigo carne del nuevo amigo

@@ -14,10 +14,11 @@ public class MainCliente {
 
 	public static void main(String[] args) {
 		Almacenador A=new Almacenador();
-		A.GuardarCarne("2018135360");
+		A.PonerEnEspera("2018135361","5");
+		/*A.GuardarCarne("2018135360");
 		A.GuardarResidencia("2018135360","4");
 		A.AgregarAmigo("2018135360", "2018135361");
-		System.out.println(A.ConsultarResidencia("2018135360"));
+		System.out.println(A.ConsultarResidencia("2018135360"));*/
 		/*String REST_URI  = "http://192.168.100.4:8080/ServidorTEC/webapi/myresource/Mapa";
 	  
 	    Client client = ClientBuilder.newClient();
