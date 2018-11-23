@@ -79,16 +79,53 @@ public class MyResource {
     	Almacenador A=new Almacenador(); 
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
-    	G.AdyacenciafromXML();
-    	G.display();
-    	return G.CaminoToJson();
+    	Gson gson=new Gson();
+    	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
+    			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
+    			", \"Pasajeros\":"+gson.toJson(A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0"))+
+    			", \"PosicionesPasajeros\":"+gson.toJson(A.getPosGenteEnEspera())+
+    			"}";
+    	return json;
+    }
+    
+    @POST
+    @Path("RutaAmigo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String RutaAmigo(@FormParam("Residencia") String Residencia,@FormParam("Carne") String Carne) {
+    	System.out.println(Residencia);
+    	Almacenador A=new Almacenador(); 
+    	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1");
+    	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
+    	Grafo G=new Grafo(31);
+    	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
+    	Gson gson=new Gson();
+    	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
+    			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
+    			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
+    			", \"PosicionesPasajeros\":"+gson.toJson(ListaPos)+
+    			"}";
+    	return json;
     }
     
     @POST
     @Path("Espera")
     @Produces(MediaType.APPLICATION_JSON)
-    public void Espera(@FormParam("Carne") String Carne) {
-    	
+    public String Espera(@FormParam("Carne") String Carne,
+    		@FormParam("Residencia") String Residencia,
+    		@FormParam("SoloAmigos") String IsAmigos) {
+    	System.out.println("Se pone en espera a "+Carne+",Quiero amigo="+IsAmigos);
+    	return A.PonerEnEspera(Carne, Residencia, IsAmigos);
+    }
+    
+    @POST
+    @Path("SalirEspera")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String SalirEspera(@FormParam("Carne") String Carne,
+    		@FormParam("SoloAmigos") String IsAmigos) {
+    	System.out.println("Se se saca de espera a "+Carne);
+    	Grafo G=new Grafo(31);
+    	A.ConsultarEnEspera(G.ConsultarCaminoAmigos(0, 2, null), Carne, IsAmigos);
+    	return A.SacarDeEspera(Carne, IsAmigos);
     }
     
     @POST

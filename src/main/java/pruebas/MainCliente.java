@@ -14,7 +14,7 @@ public class MainCliente {
 
 	public static void main(String[] args) {
 		Almacenador A=new Almacenador();
-		A.PonerEnEspera("2018135361","5");
+		A.PonerEnEspera("2018135361","5","0");
 		/*A.GuardarCarne("2018135360");
 		A.GuardarResidencia("2018135360","4");
 		A.AgregarAmigo("2018135360", "2018135361");

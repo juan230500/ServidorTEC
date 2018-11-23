@@ -19,12 +19,30 @@ import org.jdom2.output.XMLOutputter;
 import com.google.gson.Gson;
 
 
+/**
+ * @author juan
+ *
+ */
+/**
+ * @author juan
+ *
+ */
 public class Almacenador {
 	String RutaWorkSpace="/home/juan/eclipse-workspace";
 	String RutaCarne=RutaWorkSpace+"/ServidorTEC/src/main/java/carnes.xml";
 	String RutaEspera=RutaWorkSpace+"/ServidorTEC/src/main/java/espera.xml";
 	String RutaViajes=RutaWorkSpace+"/ServidorTEC/src/main/java/viajes.xml";
+	LinkedList<Integer> PosGenteEnEspera=new LinkedList<Integer>();
 	
+
+	public LinkedList<Integer> getPosGenteEnEspera() {
+		return PosGenteEnEspera;
+	}
+
+	public void setPosGenteEnEspera(LinkedList<Integer> posGenteEnEspera) {
+		PosGenteEnEspera = posGenteEnEspera;
+	}
+
 	/**
 	 * Busca el tiempo de un viaje por carne
 	 * @param Carne
@@ -169,22 +187,83 @@ public class Almacenador {
 		return "0";
 	}
 	/**
+	 * Tiene dos flujos:
+	 * 1)Busca gente que quiera ser recogida por cualquiera y que esté en la ruta propia
+	 * 2)Busca gente que esté esperando ser recogida por un amigo y que sea amigo del conductor
+	 * @param Ruta camino fijo dentro de la cual buscar gente
+	 * @param Carne carne del conductor para consulta por amigos
+	 * @param IsAmigos true para el flujo 2), false para el 1)
+	 * @return Un lista con las strings de los carnés
+	 */
+	public LinkedList<String> ConsultarEnEspera(LinkedList<Integer> Ruta,String Carne,String IsAmigos) {
+		try {
+			LinkedList<String> L=new LinkedList<String>();
+        	File inputFile = new File(RutaEspera);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			Element supercarElement;
+			if (IsAmigos.equals("1")) {
+				supercarElement=rootElement.getChild("Amigos");
+				LinkedList<String> Laux=this.ConsultarAmigos(Carne);
+				for (int i=0;i<Laux.size();i++) {
+					Element tmp=supercarElement.getChild(Laux.get(i));
+					if (tmp!=null) {
+						L.add(tmp.getName());
+						PosGenteEnEspera.add(Integer.parseInt(tmp.getAttributeValue("Residencia")));
+					}
+				}
+			}
+			else {
+				supercarElement=rootElement.getChild("Cualquiera");
+				for (int i=0;i<Ruta.size();i++) {
+					List<Element> ListaEspera=supercarElement.getChildren();
+					for (int j=0;j<ListaEspera.size();j++) {
+						Element tmp=ListaEspera.get(j);
+						if (tmp.getAttributeValue("Residencia").equals(""+Ruta.get(i))) {
+							L.add(tmp.getName());
+							PosGenteEnEspera.add(Integer.parseInt(tmp.getAttributeValue("Residencia")));
+						}
+					}
+				}
+			}
+			System.out.println(PosGenteEnEspera.toString());
+			return L;
+			
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
 	 * Guarda al estudiante en una lsita de espera [para que lo regoja cualquiera que le quede de camino
 	 * si ya se habia guardado no se repite
 	 * @param Carne
 	 * @param Residencia
 	 * @return
 	 */
-	public String PonerEnEspera(String Carne, String Residencia) {
+	public String PonerEnEspera(String Carne, String Residencia,String IsAmigos) {
 		try {
         	File inputFile = new File(RutaEspera);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
-			if (rootElement.getChild("E"+Carne)==null) {
-				Element supercarElement = new Element("E"+Carne);
-				supercarElement.setAttribute("Residencia", Residencia);
-		        doc.getRootElement().addContent(supercarElement);
+			Element supercarElement;
+			if (IsAmigos.equals("1")) {
+				supercarElement=rootElement.getChild("Amigos");
+			}
+			else {
+				supercarElement=rootElement.getChild("Cualquiera");
+			}
+			if (supercarElement.getChild("E"+Carne)==null) {
+				Element Pasajero = new Element("E"+Carne);
+				Pasajero.setAttribute("Residencia", Residencia);
+				supercarElement.addContent(Pasajero);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
 		        xmlOutput.output(doc, new FileWriter(RutaEspera));
@@ -210,17 +289,24 @@ public class Almacenador {
 	 * @param Residencia residencia del estudiante
 	 * @return falso si ni siquera estaba en la lista, true si no
 	 */
-	public String SacarDeEspera(String Carne) {
+	public String SacarDeEspera(String Carne,String IsAmigos) {
 		try {
-        	File inputFile = new File(RutaCarne);
+			File inputFile = new File(RutaEspera);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
-			if (rootElement.getChild("E"+Carne)!=null) {
-				rootElement.removeChild("E"+Carne);
+			Element supercarElement;
+			if (IsAmigos.equals("1")) {
+				supercarElement=rootElement.getChild("Amigos");
+			}
+			else {
+				supercarElement=rootElement.getChild("Cualquiera");
+			}
+			if (supercarElement.getChild("E"+Carne)!=null) {
+				supercarElement.removeChild("E"+Carne);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter(RutaCarne));
+		        xmlOutput.output(doc, new FileWriter(RutaEspera));
 		        return "1";
 			}
 			else {
@@ -269,7 +355,11 @@ public class Almacenador {
 		}
 		return "0";
 	}
-	
+	/**
+	 * Busca los amigos de un carne registrados como tal
+	 * @param Carne
+	 * @return
+	 */
 	public LinkedList<String> ConsultarAmigos(String Carne) {
 		try {
         	File inputFile = new File(RutaCarne);

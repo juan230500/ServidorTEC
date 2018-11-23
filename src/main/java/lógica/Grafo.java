@@ -30,6 +30,7 @@ public class Grafo {
     SAXBuilder saxBuilder;
     LinkedList<Integer> MejorUltimaRuta;
     LinkedList<Integer> Tiempos;
+    String RutaWorkSpace="/home/juan/eclipse-workspace";
     
     public LinkedList<Integer> getMejorUltimaRuta(){
     	return MejorUltimaRuta;
@@ -162,6 +163,7 @@ public class Grafo {
 		for (int i=0;i<MejorUltimaRuta.size()-1;i++) {
 			Tiempos.add(this.DistanciafromXML(MejorUltimaRuta.get(i), MejorUltimaRuta.get(i+1)));
 		}
+		Tiempos.add(0);
 	}
 	
 	/**
@@ -379,7 +381,7 @@ public class Grafo {
 	 * @return entero con la distancia
 	 */
 	public int DistanciafromXML(int inicio,int fin) {
-		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/distancias.xml");
+		File inputFile = new File(RutaWorkSpace+"/ServidorTEC/src/main/java/distancias.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -404,7 +406,7 @@ public class Grafo {
 	 * @return entero en esa posición
 	 */
 	public int VerticefromXML(int i,int j) {
-		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/vertices.xml");
+		File inputFile = new File(RutaWorkSpace+"/ServidorTEC/src/main/java/vertices.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
@@ -427,7 +429,7 @@ public class Grafo {
 	 * con el fin de no necesitar guardrse en una variable.
 	 */
 	public void AdyacenciafromXML() {
-		File inputFile = new File("C:/Users/Dell/eclipse-workspace/ServidorTEC/src/main/java/matriz.xml");
+		File inputFile = new File(RutaWorkSpace+"/ServidorTEC/src/main/java/matriz.xml");
         this.saxBuilder = new SAXBuilder();
         Document document = null;
         
