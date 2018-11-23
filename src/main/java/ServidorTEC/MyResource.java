@@ -76,16 +76,21 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String Ruta(
     		@FormParam("Residencia") String Residencia,
+    		@FormParam("Carne") String Carne,
     		@FormParam("Asientos") String Asientos) {
     	System.out.println(Residencia);
-    	Almacenador A=new Almacenador(); 
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
+    	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0",Asientos);
+    	for (int i=0;i<ListaAmigos.size();i++) {
+    		A.SacarDeEspera(Carne,ListaAmigos.get(i).substring(1), "0");
+    	}
+    	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
     	Gson gson=new Gson();
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
-    			", \"Pasajeros\":"+gson.toJson(A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0",Asientos))+
-    			", \"PosicionesPasajeros\":"+gson.toJson(A.getPosGenteEnEspera())+
+    			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
+    			", \"PosicionesPasajeros\":"+gson.toJson(ListaPos)+
     			"}";
     	return json;
     }
@@ -98,9 +103,13 @@ public class MyResource {
     		@FormParam("Carne") String Carne,
     		@FormParam("Asientos") String Asientos) {
     	System.out.println(Residencia);
+    	
     	Almacenador A=new Almacenador(); 
     	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1",Asientos);
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
+    	for (int i=0;i<ListaAmigos.size();i++) {
+    		A.SacarDeEspera(Carne,ListaAmigos.get(i).substring(1), "1");
+    	}
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
     	Gson gson=new Gson();
@@ -110,6 +119,13 @@ public class MyResource {
     			", \"PosicionesPasajeros\":"+gson.toJson(ListaPos)+
     			"}";
     	return json;
+    }
+    
+    @POST
+    @Path("SeguirEsperando")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String SeguirEsperando(@FormParam("SoloAmigos") String IsAmigo,@FormParam("Carne") String Carne) {
+    	return A.SeguirEsperando(Carne, IsAmigo);
     }
     
     @POST
@@ -158,7 +174,7 @@ public class MyResource {
     public String SalirEspera(@FormParam("Carne") String Carne,
     		@FormParam("SoloAmigos") String IsAmigos) {
     	System.out.println("Se se saca de espera a "+Carne);
-    	return A.SacarDeEspera(Carne, IsAmigos);
+    	return A.SacarDeEspera("1",Carne, IsAmigos);
     }
     
     @POST

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Espera>
   <Amigos>
-    <E2018135362 Residencia="22" />
-    <E2018135361 Residencia="1" />
+    <E2018135361 Residencia="1">1</E2018135361>
   </Amigos>
   <Cualquiera>
-    <E2018135362 Residencia="22" />
     <E2018135361 Residencia="1" />
   </Cualquiera>
 </Espera>

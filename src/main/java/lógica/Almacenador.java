@@ -42,6 +42,45 @@ public class Almacenador {
 	public void setPosGenteEnEspera(LinkedList<Integer> posGenteEnEspera) {
 		PosGenteEnEspera = posGenteEnEspera;
 	}
+	
+	public String SeguirEsperando(String Carne, String IsAmigo) {
+		try {
+        	File inputFile = new File(RutaEspera);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			Element supercarElement;
+			if (IsAmigo.equals("1")) {
+				supercarElement=rootElement.getChild("Amigos");
+			}
+			else {
+				supercarElement=rootElement.getChild("Cualquiera");
+			}
+			if (supercarElement.getChild("E"+Carne)!=null) {
+				String txt=supercarElement.getChild("E"+Carne).getText();
+				if (txt!=null) {
+					supercarElement.removeChild("E"+Carne);
+			        XMLOutputter xmlOutput = new XMLOutputter();
+			        xmlOutput.setFormat(Format.getPrettyFormat());
+			        xmlOutput.output(doc, new FileWriter(RutaEspera));
+					return txt;
+				}
+				else {
+					return "1";
+				}
+			}
+			else {
+				return "0";
+			}
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
 
 	/**
 	 * Busca el tiempo de un viaje por carne
@@ -351,13 +390,13 @@ public class Almacenador {
 	}
 	
 	/**
-	 * Una vez que el estudiante recibe un conductor, se saca de la lsita de espera
+	 * Una vez que el estudiante recibe un conductor, se señala en la lista de espera
 	 * para dar campo a otros estudiantes
 	 * @param Carne Carne del estudiante
 	 * @param Residencia residencia del estudiante
 	 * @return falso si ni siquera estaba en la lista, true si no
 	 */
-	public String SacarDeEspera(String Carne,String IsAmigos) {
+	public String SacarDeEspera(String Conductor,String Carne,String IsAmigos) {
 		try {
 			File inputFile = new File(RutaEspera);
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -371,7 +410,7 @@ public class Almacenador {
 				supercarElement=rootElement.getChild("Cualquiera");
 			}
 			if (supercarElement.getChild("E"+Carne)!=null) {
-				supercarElement.removeChild("E"+Carne);
+				supercarElement.getChild("E"+Carne).setText(Conductor);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
 		        xmlOutput.output(doc, new FileWriter(RutaEspera));
@@ -389,6 +428,7 @@ public class Almacenador {
 		}
 		return "0";
 	}
+	
 	
 	/**
 	 * Agrega un amigo sobre un carne ya guardado en el xml
