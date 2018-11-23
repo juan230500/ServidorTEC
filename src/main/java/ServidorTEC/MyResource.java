@@ -62,7 +62,6 @@ public class MyResource {
     	return A.Top5();
     }
     
-    
     @POST
     @Path("Carne")
     @Produces(MediaType.APPLICATION_JSON)
@@ -91,6 +90,15 @@ public class MyResource {
     public void Espera(@FormParam("Carne") String Carne) {
     	
     }
+    
+    @POST
+    @Path("IniciarViaje")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String IniciarViaje(@FormParam("Carne") String Carne) {
+    	A.AgregarAmigo(Carne, "2018131313");
+    	return A.RegistrarViaje(Carne, A.ConsultarAmigos(Carne));
+    }
+    
     
     
 }

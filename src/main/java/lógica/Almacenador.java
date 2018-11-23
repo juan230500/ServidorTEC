@@ -20,8 +20,71 @@ import com.google.gson.Gson;
 
 
 public class Almacenador {
-	String RutaCarne="/home/juan/eclipse-workspace/ServidorTEC/src/main/java/carnes.xml";
-	String RutaEspera="/home/juan/eclipse-workspace/ServidorTEC/src/main/java/espera.xml";
+	String RutaWorkSpace="/home/juan/eclipse-workspace";
+	String RutaCarne=RutaWorkSpace+"/ServidorTEC/src/main/java/carnes.xml";
+	String RutaEspera=RutaWorkSpace+"/ServidorTEC/src/main/java/espera.xml";
+	String RutaViajes=RutaWorkSpace+"/ServidorTEC/src/main/java/viajes.xml";
+	
+	/**
+	 * Busca el tiempo de un viaje por carne
+	 * @param Carne
+	 * @return
+	 */
+	public String Consultarviaje(String Carne) {
+		try {
+        	File inputFile = new File(RutaViajes);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        Element supercarElement = rootElement.getChild("E"+Carne);
+	        return supercarElement.getAttributeValue("tiempo");
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
+	 * Metodo que registra el inicio del viaje y el tiempo en el que inicia
+	 * @param CarneConductorC
+	 * @param CarnesResto
+	 * @return
+	 */
+	public String RegistrarViaje(String CarneConductor,LinkedList<String> CarnesResto) {
+		try {
+        	File inputFile = new File(RutaViajes);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			if (rootElement.getChild("E"+CarneConductor)==null) {
+				Element supercarElement = new Element("E"+CarneConductor);
+				supercarElement.setAttribute("tiempo", ""+(int)System.currentTimeMillis());
+				for (int i=0;i<CarnesResto.size();i++) {
+					Element pasajero = new Element("E"+CarnesResto.get(i));
+					supercarElement.addContent(pasajero);
+				}
+		        doc.getRootElement().addContent(supercarElement);
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter(RutaViajes));
+		        return "1";
+			}
+			else {
+				return "0";
+			}
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
 	
 	/**
 	 * Lee el array de carnés, obtiene los cinco conductores con más viajes y
@@ -205,6 +268,29 @@ public class Almacenador {
 			e.printStackTrace();
 		}
 		return "0";
+	}
+	
+	public LinkedList<String> ConsultarAmigos(String Carne) {
+		try {
+        	File inputFile = new File(RutaCarne);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        Element supercarElement = rootElement.getChild("E"+Carne);
+	        List<Element> L=supercarElement.getChildren();
+	        LinkedList<String> LS=new LinkedList<String>();
+	        for (int i=0;i<L.size();i++) {
+	        	LS.add(L.get(i).getName());
+	        }
+	        return LS;
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**
