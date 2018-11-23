@@ -74,7 +74,9 @@ public class MyResource {
     @POST
     @Path("RutaSolo")
     @Produces(MediaType.APPLICATION_JSON)
-    public String Ruta(@FormParam("Residencia") String Residencia) {
+    public String Ruta(
+    		@FormParam("Residencia") String Residencia,
+    		@FormParam("Asientos") String Asientos) {
     	System.out.println(Residencia);
     	Almacenador A=new Almacenador(); 
     	Grafo G=new Grafo(31);
@@ -82,7 +84,7 @@ public class MyResource {
     	Gson gson=new Gson();
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
-    			", \"Pasajeros\":"+gson.toJson(A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0"))+
+    			", \"Pasajeros\":"+gson.toJson(A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0",Asientos))+
     			", \"PosicionesPasajeros\":"+gson.toJson(A.getPosGenteEnEspera())+
     			"}";
     	return json;
@@ -91,10 +93,13 @@ public class MyResource {
     @POST
     @Path("RutaAmigo")
     @Produces(MediaType.APPLICATION_JSON)
-    public String RutaAmigo(@FormParam("Residencia") String Residencia,@FormParam("Carne") String Carne) {
+    public String RutaAmigo(
+    		@FormParam("Residencia") String Residencia,
+    		@FormParam("Carne") String Carne,
+    		@FormParam("Asientos") String Asientos) {
     	System.out.println(Residencia);
     	Almacenador A=new Almacenador(); 
-    	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1");
+    	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1",Asientos);
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
@@ -118,7 +123,23 @@ public class MyResource {
     @Path("CalificacionPropia")
     @Produces(MediaType.APPLICATION_JSON)
     public String Calificar(@FormParam("Carne") String Carne) {
-    	return A.ConsultarCalificacionPromedio(Carne);
+    	return ""+A.ConsultarCalificacionPromedio(Carne);
+    }
+    
+    @POST
+    @Path("Amigos")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Amigos(@FormParam("Carne") String Carne) {
+    	LinkedList<String> ListaAmigos=A.ConsultarAmigos(Carne);
+    	LinkedList<Integer> ListaCalificacion=new LinkedList<Integer>();
+    	for (int i=0;i<ListaAmigos.size();i++) {
+    		ListaCalificacion.add(A.ConsultarCalificacionPromedio(ListaAmigos.get(i).substring(1)));
+    	}
+    	Gson gson=new Gson();
+    	String json="{\"Amigos\":"+gson.toJson(ListaAmigos)+
+    			", \"Calificaciones\":"+gson.toJson(ListaCalificacion)+
+    			"}";
+    	return json;
     }
     
     @POST
@@ -137,8 +158,6 @@ public class MyResource {
     public String SalirEspera(@FormParam("Carne") String Carne,
     		@FormParam("SoloAmigos") String IsAmigos) {
     	System.out.println("Se se saca de espera a "+Carne);
-    	Grafo G=new Grafo(31);
-    	A.ConsultarEnEspera(G.ConsultarCaminoAmigos(0, 2, null), Carne, IsAmigos);
     	return A.SacarDeEspera(Carne, IsAmigos);
     }
     

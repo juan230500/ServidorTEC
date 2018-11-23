@@ -197,7 +197,7 @@ public class Almacenador {
 	 * @param Carne carné a sumar 
 	 * @return false si no existe ese carne, true de lo contrario
 	 */
-	public String ConsultarCalificacionPromedio(String Carne) {
+	public int ConsultarCalificacionPromedio(String Carne) {
 		try {
 			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -207,10 +207,10 @@ public class Almacenador {
 	        	Element supercarElement=rootElement.getChild("E"+Carne);
 	        	int cantidad=Integer.parseInt(supercarElement.getAttributeValue("NCalificaciones"));
 	        	int actual=Integer.parseInt(supercarElement.getAttributeValue("Calificacion"));
-		        return ""+actual*100/cantidad;
+		        return actual*100/cantidad;
 	        }
 	        else {
-	        	return "0";
+	        	return 0;
 	        }
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
@@ -219,7 +219,7 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "0";
+		return 0;
 	}
 	
 	/**
@@ -262,7 +262,7 @@ public class Almacenador {
 	 * @param IsAmigos true para el flujo 2), false para el 1)
 	 * @return Un lista con las strings de los carnés
 	 */
-	public LinkedList<String> ConsultarEnEspera(LinkedList<Integer> Ruta,String Carne,String IsAmigos) {
+	public LinkedList<String> ConsultarEnEspera(LinkedList<Integer> Ruta,String Carne,String IsAmigos, String max) {
 		try {
 			LinkedList<String> L=new LinkedList<String>();
         	File inputFile = new File(RutaEspera);
@@ -270,10 +270,11 @@ public class Almacenador {
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 			Element supercarElement;
+			int maximo=Integer.parseInt(max);
 			if (IsAmigos.equals("1")) {
 				supercarElement=rootElement.getChild("Amigos");
 				LinkedList<String> Laux=this.ConsultarAmigos(Carne);
-				for (int i=0;i<Laux.size();i++) {
+				for (int i=0;i<Laux.size() && i<maximo;i++) {
 					Element tmp=supercarElement.getChild(Laux.get(i));
 					if (tmp!=null) {
 						L.add(tmp.getName());
@@ -283,7 +284,7 @@ public class Almacenador {
 			}
 			else {
 				supercarElement=rootElement.getChild("Cualquiera");
-				for (int i=0;i<Ruta.size();i++) {
+				for (int i=0;i<Ruta.size() && i<maximo;i++) {
 					List<Element> ListaEspera=supercarElement.getChildren();
 					for (int j=0;j<ListaEspera.size();j++) {
 						Element tmp=ListaEspera.get(j);
@@ -404,7 +405,10 @@ public class Almacenador {
 	        Element supercarElement = rootElement.getChild("E"+CarnePropio);
 	        if (supercarElement.getChild("E"+CarneAmigo)==null) {
 	        	Element nuevoamigo=new Element("E"+CarneAmigo);
+	        	Element amigo = rootElement.getChild("E"+CarneAmigo);
 		        supercarElement.addContent(nuevoamigo);
+		        nuevoamigo=new Element("E"+CarnePropio);
+		        amigo.setContent(nuevoamigo);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
 		        xmlOutput.output(doc, new FileWriter(RutaCarne));
