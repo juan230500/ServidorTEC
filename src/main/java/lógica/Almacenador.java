@@ -156,9 +156,76 @@ public class Almacenador {
 		return gson.toJson(S);
 	}
 	/**
+	 * Suma una calificacion al promedio existente
+	 * @param Carne carné a sumar 
+	 * @return false si no existe ese carne, true de lo contrario
+	 */
+	public String SumarCalificacion(String Carne,String Calificacion) {
+		try {
+			File inputFile = new File(RutaCarne);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        if (rootElement.getChild("E"+Carne)!=null) {
+	        	Element supercarElement=rootElement.getChild("E"+Carne);
+	        	int cantidad=Integer.parseInt(supercarElement.getAttributeValue("NCalificaciones"));
+	        	int actual=Integer.parseInt(supercarElement.getAttributeValue("Calificacion"));
+	        	int nueva=Integer.parseInt(Calificacion);
+	        	System.out.println(nueva);
+	        	supercarElement.setAttribute("Calificacion", ""+(actual+nueva));
+	        	supercarElement.setAttribute("NCalificaciones", ""+(cantidad+1));
+		        XMLOutputter xmlOutput = new XMLOutputter();
+		        xmlOutput.setFormat(Format.getPrettyFormat());
+		        xmlOutput.output(doc, new FileWriter(RutaCarne));
+		        return "1";
+	        }
+	        else {
+	        	return "0";
+	        }
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
+	 * Obtiene el promedio de calificaciones de un carne
+	 * @param Carne carné a sumar 
+	 * @return false si no existe ese carne, true de lo contrario
+	 */
+	public String ConsultarCalificacionPromedio(String Carne) {
+		try {
+			File inputFile = new File(RutaCarne);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+	        if (rootElement.getChild("E"+Carne)!=null) {
+	        	Element supercarElement=rootElement.getChild("E"+Carne);
+	        	int cantidad=Integer.parseInt(supercarElement.getAttributeValue("NCalificaciones"));
+	        	int actual=Integer.parseInt(supercarElement.getAttributeValue("Calificacion"));
+		        return ""+actual*100/cantidad;
+	        }
+	        else {
+	        	return "0";
+	        }
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
+	/**
 	 * Suma un viaje más a algún carné
 	 * @param Carne carné a sumar el viaje
-	 * @return false,si no existe ese carne, true de lo contrario
+	 * @return false si no existe ese carne, true de lo contrario
 	 */
 	public String SumarViaje(String Carne) {
 		try {
@@ -419,6 +486,8 @@ public class Almacenador {
 			if (rootElement.getChild("E"+Carne)==null) {
 				Element supercarElement = new Element("E"+Carne);
 				supercarElement.setAttribute("Viajes", "0");
+				supercarElement.setAttribute("NCalificaciones", "0");
+				supercarElement.setAttribute("Calificacion", "0");
 		        doc.getRootElement().addContent(supercarElement);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());

@@ -108,6 +108,20 @@ public class MyResource {
     }
     
     @POST
+    @Path("Calificar")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Calificar(@FormParam("Calificacion") String Calificacion,@FormParam("Carne") String Carne) {
+    	return A.SumarCalificacion(Carne, Calificacion);
+    }
+    
+    @POST
+    @Path("CalificacionPropia")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Calificar(@FormParam("Carne") String Carne) {
+    	return A.ConsultarCalificacionPromedio(Carne);
+    }
+    
+    @POST
     @Path("Espera")
     @Produces(MediaType.APPLICATION_JSON)
     public String Espera(@FormParam("Carne") String Carne,
