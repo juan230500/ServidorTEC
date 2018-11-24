@@ -246,7 +246,12 @@ public class Almacenador {
 	        	Element supercarElement=rootElement.getChild("E"+Carne);
 	        	int cantidad=Integer.parseInt(supercarElement.getAttributeValue("NCalificaciones"));
 	        	int actual=Integer.parseInt(supercarElement.getAttributeValue("Calificacion"));
-		        return actual*100/cantidad;
+		        if (cantidad!=0) {
+		        	return actual*100/cantidad;
+		        }
+		        else {
+		        	 return 0;
+		        }
 	        }
 	        else {
 	        	return 0;
