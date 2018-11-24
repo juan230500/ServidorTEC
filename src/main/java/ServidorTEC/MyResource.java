@@ -86,6 +86,7 @@ public class MyResource {
     		A.SacarDeEspera(Carne,ListaAmigos.get(i).substring(1), "0");
     	}
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
+    	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
     	Gson gson=new Gson();
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
@@ -103,7 +104,6 @@ public class MyResource {
     		@FormParam("Carne") String Carne,
     		@FormParam("Asientos") String Asientos) {
     	System.out.println(Residencia);
-    	
     	Almacenador A=new Almacenador(); 
     	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1",Asientos);
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
@@ -112,6 +112,7 @@ public class MyResource {
     	}
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
+    	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
     	Gson gson=new Gson();
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
@@ -126,6 +127,46 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String SeguirEsperando(@FormParam("SoloAmigos") String IsAmigo,@FormParam("Carne") String Carne) {
     	return A.SeguirEsperando(Carne, IsAmigo);
+    }
+    
+    @POST
+    @Path("ActualizarViaje")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String ActualizarViaje(
+    		@FormParam("Carne") String Carne,
+    		@FormParam("Pos") String Pos) {
+    	LinkedList<Integer> L=A.ActualizarViaje(Carne, Pos);
+    	String json;
+    	if (L==null) {
+    		return "0";
+    	}
+    	if (L.size()==0) {
+    		json="1";
+    	}
+    	else if (L.size()==1){
+    		int NuevoInicio=L.get(0);;
+        	Grafo G=new Grafo(31);
+        	G.ConsultarCaminoAmigos(NuevoInicio,0, null) ;
+        	Gson gson=new Gson();
+        	json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
+        			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
+        			"}";;
+    	}
+    	else {
+    		int NuevoInicio=L.get(0);
+        	LinkedList<Integer> NuevosAmigos=new LinkedList<Integer>();
+        	L.removeFirst();
+        	for (int i=0;i<L.size();i++) {
+        		NuevosAmigos.add(L.removeFirst());
+        	}
+        	Grafo G=new Grafo(31);
+        	G.ConsultarCaminoAmigos(NuevoInicio,0, NuevosAmigos) ;
+        	Gson gson=new Gson();
+        	json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
+        			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
+        			"}";
+    	}
+    	return json;
     }
     
     @POST
@@ -176,15 +217,4 @@ public class MyResource {
     	System.out.println("Se se saca de espera a "+Carne);
     	return A.SacarDeEspera("1",Carne, IsAmigos);
     }
-    
-    @POST
-    @Path("IniciarViaje")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String IniciarViaje(@FormParam("Carne") String Carne) {
-    	A.AgregarAmigo(Carne, "2018131313");
-    	return A.RegistrarViaje(Carne, A.ConsultarAmigos(Carne));
-    }
-    
-    
-    
 }

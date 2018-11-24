@@ -42,7 +42,14 @@ public class Almacenador {
 	public void setPosGenteEnEspera(LinkedList<Integer> posGenteEnEspera) {
 		PosGenteEnEspera = posGenteEnEspera;
 	}
-	
+	/**
+	 * Metodo que revisa el xml de espra para ver si
+	 * ya se asigno algún chofer al carne del estudiante
+	 * de ser así devuelve el carne del conductor
+	 * @param Carne del estudiante a consultar
+	 * @param IsAmigo true si pidio solo amigos, false sino
+	 * @return carne del conductor asignado, 0 si aun no hay
+	 */
 	public String SeguirEsperando(String Carne, String IsAmigo) {
 		try {
         	File inputFile = new File(RutaEspera);
@@ -87,14 +94,39 @@ public class Almacenador {
 	 * @param Carne
 	 * @return
 	 */
-	public String Consultarviaje(String Carne) {
+	public LinkedList<Integer> ActualizarViaje(String Carne,String Pos) {
 		try {
         	File inputFile = new File(RutaViajes);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 	        Element supercarElement = rootElement.getChild("E"+Carne);
-	        return supercarElement.getAttributeValue("tiempo");
+	        List<Element> ListaAmigos=supercarElement.getChildren();
+	        LinkedList<Integer> L=new  LinkedList<Integer>();
+	        int criterio =0;
+	        if (supercarElement!=null) {
+	        	supercarElement.setAttribute("Pos", Pos);
+	        	if (supercarElement.getAttributeValue("ActualizarRuta" ).equals("1")) {
+					L.add(Integer.parseInt(Pos));
+					if (supercarElement.getAttributeValue("IsAmigo" ).equals("1")) {
+						criterio=1;
+					}
+				}
+	        	for (int i=0;i<ListaAmigos.size();i++) {
+					if (ListaAmigos.get(i).getText().equals(Pos)) {
+						//supercarElement.removeChild(ListaAmigos.get(i).getName());
+					}
+					else if (criterio==1) {
+						
+						L.add(Integer.parseInt(ListaAmigos.get(i).getText()));
+					}
+				}
+		        XMLOutputter xmlOutput = new XMLOutputter();
+	            xmlOutput.setFormat(Format.getPrettyFormat());
+				xmlOutput.output(doc, new FileWriter(RutaViajes));
+				return L;
+				
+	        }
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -102,7 +134,7 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "0";
+		return null;
 	}
 	
 	/**
@@ -111,36 +143,48 @@ public class Almacenador {
 	 * @param CarnesResto
 	 * @return
 	 */
-	public String RegistrarViaje(String CarneConductor,LinkedList<String> CarnesResto) {
-		try {
+	public String RegistrarViaje(
+			String CarneConductor,
+			LinkedList<String> CarnesResto,
+			LinkedList<Integer> PosResto,
+			String PostInicio,
+			String IsAmigo) {	
+        try {
         	File inputFile = new File(RutaViajes);
             SAXBuilder saxBuilder = new SAXBuilder();
 			Document doc = saxBuilder.build(inputFile);
 			Element rootElement = doc.getRootElement();
 			if (rootElement.getChild("E"+CarneConductor)==null) {
-				Element supercarElement = new Element("E"+CarneConductor);
-				supercarElement.setAttribute("tiempo", ""+(int)System.currentTimeMillis());
-				for (int i=0;i<CarnesResto.size();i++) {
-					Element pasajero = new Element("E"+CarnesResto.get(i));
-					supercarElement.addContent(pasajero);
+				Element supercarElement= new Element("E"+CarneConductor);
+				supercarElement.setAttribute("ActualizarRuta","0");
+				supercarElement.setAttribute("Pos", PostInicio);
+				if (IsAmigo.equals("1")) {
+					supercarElement.setAttribute("IsAmigo", "1");
 				}
-		        doc.getRootElement().addContent(supercarElement);
-		        XMLOutputter xmlOutput = new XMLOutputter();
-		        xmlOutput.setFormat(Format.getPrettyFormat());
-		        xmlOutput.output(doc, new FileWriter(RutaViajes));
-		        return "1";
+				else {
+					supercarElement.setAttribute("IsAmigo", "0");
+				}
+				Element Pasajero;
+				for (int i=0;i<CarnesResto.size();i++) {
+					Pasajero=new Element(CarnesResto.get(i));
+					Pasajero.setText(""+PosResto.get(i));
+					supercarElement.addContent(Pasajero);
+				}
+				rootElement.addContent(supercarElement);
+	    		XMLOutputter xmlOutput = new XMLOutputter();
+	            xmlOutput.setFormat(Format.getPrettyFormat());
+				xmlOutput.output(doc, new FileWriter(RutaViajes));
+				return "1";
 			}
 			else {
 				return "0";
 			}
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (IOException | JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "0";
+		
+		return "";
 	}
 	
 	/**
@@ -210,7 +254,6 @@ public class Almacenador {
 	        	int cantidad=Integer.parseInt(supercarElement.getAttributeValue("NCalificaciones"));
 	        	int actual=Integer.parseInt(supercarElement.getAttributeValue("Calificacion"));
 	        	int nueva=Integer.parseInt(Calificacion);
-	        	System.out.println(nueva);
 	        	supercarElement.setAttribute("Calificacion", ""+(actual+nueva));
 	        	supercarElement.setAttribute("NCalificaciones", ""+(cantidad+1));
 		        XMLOutputter xmlOutput = new XMLOutputter();
@@ -339,7 +382,6 @@ public class Almacenador {
 					}
 				}
 			}
-			System.out.println(PosGenteEnEspera.toString());
 			return L;
 			
 		} catch (JDOMException e) {
