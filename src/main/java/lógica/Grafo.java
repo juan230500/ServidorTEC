@@ -30,7 +30,7 @@ public class Grafo {
     SAXBuilder saxBuilder;
     LinkedList<Integer> MejorUltimaRuta;
     LinkedList<Integer> Tiempos;
-    String RutaWorkSpace="/home/juan/eclipse-workspace";
+    String RutaWorkSpace="C:\\Users\\Dell\\eclipse-workspace";
     
     public LinkedList<Integer> getMejorUltimaRuta(){
     	return MejorUltimaRuta;

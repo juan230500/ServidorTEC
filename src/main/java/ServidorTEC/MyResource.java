@@ -31,16 +31,17 @@ public class MyResource {
     }
 	
     @GET
-    @Path("Mapa")
+    @Path("Mapa")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Mapa() {
     	Grafo G=new Grafo(31);
     	G.AdyacenciafromXML();
+    	System.out.println("Se envia el mapa");
     	return G.MatrizToJson();
     }
 
     @POST
-    @Path("NuevoAmigo")
+    @Path("NuevoAmigo")//
     @Produces(MediaType.APPLICATION_JSON)
     public String NuevoAmigo(@FormParam("Conductor") String CarneConductor,@FormParam("Amigo") String CarneAmigo) {
     	System.out.println("Se agrega a "+CarneAmigo+" como un amigo de "+CarneConductor);
@@ -48,10 +49,10 @@ public class MyResource {
     }
     
     @POST
-    @Path("Residencia")
+    @Path("Residencia")//
     @Produces(MediaType.APPLICATION_JSON)
     public void Residencia(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
-    	System.out.println("++"+Residencia);
+    	System.out.println("Residencia "+Residencia+" de "+Carne);
     	A.GuardarResidencia(Carne, Residencia);
     }
     
@@ -59,11 +60,12 @@ public class MyResource {
     @Path("Top5")
     @Produces(MediaType.APPLICATION_JSON)
     public String Top5() {
+    	System.out.println("Se envia el top");
     	return A.Top5();
     }
     
     @POST
-    @Path("Carne")
+    @Path("Carne")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Carne(@FormParam("Carne") String Carne) {
     	System.out.println("Se agrega el carne "+Carne);
@@ -78,7 +80,7 @@ public class MyResource {
     		@FormParam("Residencia") String Residencia,
     		@FormParam("Carne") String Carne,
     		@FormParam("Asientos") String Asientos) {
-    	System.out.println(Residencia);
+    	
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
     	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0",Asientos);
@@ -87,7 +89,9 @@ public class MyResource {
     	}
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
     	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
+    	A.SumarViaje(Carne);
     	Gson gson=new Gson();
+    	System.out.println("Se inicia el viaje solo de "+Carne+" junto a "+ListaAmigos.toString()+" por la ruta "+ListaPos.toString());
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
     			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
@@ -113,7 +117,9 @@ public class MyResource {
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
     	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
+    	A.SumarViaje(Carne);
     	Gson gson=new Gson();
+    	System.out.println("Se inicia el viaje con amigos de "+Carne+" junto a "+ListaAmigos.toString()+" por la ruta "+ListaPos.toString());
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
     			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
@@ -126,6 +132,7 @@ public class MyResource {
     @Path("SeguirEsperando")
     @Produces(MediaType.APPLICATION_JSON)
     public String SeguirEsperando(@FormParam("SoloAmigos") String IsAmigo,@FormParam("Carne") String Carne) {
+    	System.out.println("Se consulta por la espera de "+Carne);
     	return A.SeguirEsperando(Carne, IsAmigo);
     }
     
@@ -166,6 +173,7 @@ public class MyResource {
         			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
         			"}";
     	}
+    	System.out.println("El viaje de "+Carne+"Se actualiza en "+Pos);
     	return json;
     }
     
@@ -173,6 +181,7 @@ public class MyResource {
     @Path("Calificar")
     @Produces(MediaType.APPLICATION_JSON)
     public String Calificar(@FormParam("Calificacion") String Calificacion,@FormParam("Carne") String Carne) {
+    	System.out.println("Se califica a "+Carne+" con "+Calificacion);
     	return A.SumarCalificacion(Carne, Calificacion);
     }
     
@@ -180,11 +189,12 @@ public class MyResource {
     @Path("CalificacionPropia")
     @Produces(MediaType.APPLICATION_JSON)
     public String Calificar(@FormParam("Carne") String Carne) {
+    	System.out.println("Se consulta la calificacion de "+Carne);
     	return ""+A.ConsultarCalificacionPromedio(Carne);
     }
     
     @POST
-    @Path("Amigos")
+    @Path("Amigos")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Amigos(@FormParam("Carne") String Carne) {
     	LinkedList<String> ListaAmigos=A.ConsultarAmigos(Carne);
@@ -196,6 +206,7 @@ public class MyResource {
     	String json="{\"Amigos\":"+gson.toJson(ListaAmigos)+
     			", \"Calificaciones\":"+gson.toJson(ListaCalificacion)+
     			"}";
+    	System.out.println("Se consultan los amigos de "+Carne);
     	return json;
     }
     
@@ -217,4 +228,5 @@ public class MyResource {
     	System.out.println("Se se saca de espera a "+Carne);
     	return A.SacarDeEspera("1",Carne, IsAmigos);
     }
+    
 }

@@ -28,7 +28,7 @@ import com.google.gson.Gson;
  *
  */
 public class Almacenador {
-	String RutaWorkSpace="/home/juan/eclipse-workspace";
+	String RutaWorkSpace="C:\\Users\\Dell\\eclipse-workspace";
 	String RutaCarne=RutaWorkSpace+"/ServidorTEC/src/main/java/carnes.xml";
 	String RutaEspera=RutaWorkSpace+"/ServidorTEC/src/main/java/espera.xml";
 	String RutaViajes=RutaWorkSpace+"/ServidorTEC/src/main/java/viajes.xml";
