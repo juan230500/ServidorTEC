@@ -42,6 +42,8 @@ public class Almacenador {
 	public void setPosGenteEnEspera(LinkedList<Integer> posGenteEnEspera) {
 		PosGenteEnEspera = posGenteEnEspera;
 	}
+	
+	
 	/**
 	 * Metodo que revisa el xml de espra para ver si
 	 * ya se asigno algún chofer al carne del estudiante
@@ -65,7 +67,8 @@ public class Almacenador {
 			}
 			if (supercarElement.getChild("E"+Carne)!=null) {
 				String txt=supercarElement.getChild("E"+Carne).getText();
-				if (txt!=null) {
+				
+				if (txt.length()>1) {
 					supercarElement.removeChild("E"+Carne);
 			        XMLOutputter xmlOutput = new XMLOutputter();
 			        xmlOutput.setFormat(Format.getPrettyFormat());
@@ -186,6 +189,36 @@ public class Almacenador {
 		
 		return "";
 	}
+	/**
+	 * Metodo para elimnar el registro de viaje y que el carne pueda volver a viajar
+	 * @param Carne
+	 * @return 1 si ese viaje existia, 0 sino
+	 */
+	public String CerraViaje(
+			String Carne) {
+        try {
+        	File inputFile = new File(RutaViajes);
+            SAXBuilder saxBuilder = new SAXBuilder();
+			Document doc = saxBuilder.build(inputFile);
+			Element rootElement = doc.getRootElement();
+			if (rootElement.getChild("E"+Carne)!=null) {
+				rootElement.removeChild("E"+Carne);
+	    		XMLOutputter xmlOutput = new XMLOutputter();
+	            xmlOutput.setFormat(Format.getPrettyFormat());
+				xmlOutput.output(doc, new FileWriter(RutaViajes));
+				return "1";
+			}
+			else {
+				return "0";
+			}
+		} catch (IOException | JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
 	
 	/**
 	 * Lee el array de carnés, obtiene los cinco conductores con más viajes y
@@ -443,7 +476,7 @@ public class Almacenador {
 	 * @param Residencia residencia del estudiante
 	 * @return falso si ni siquera estaba en la lista, true si no
 	 */
-	public String SacarDeEspera(String Conductor,String Carne,String IsAmigos) {
+	public String SacarDeEspera(String JsonDelConductor,String Carne,String IsAmigos) {
 		try {
 			File inputFile = new File(RutaEspera);
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -457,7 +490,7 @@ public class Almacenador {
 				supercarElement=rootElement.getChild("Cualquiera");
 			}
 			if (supercarElement.getChild("E"+Carne)!=null) {
-				supercarElement.getChild("E"+Carne).setText(Conductor);
+				supercarElement.getChild("E"+Carne).setText(JsonDelConductor);
 		        XMLOutputter xmlOutput = new XMLOutputter();
 		        xmlOutput.setFormat(Format.getPrettyFormat());
 		        xmlOutput.output(doc, new FileWriter(RutaEspera));
@@ -623,24 +656,4 @@ public class Almacenador {
 		}
 		
 	}
-	
-	public static void main(String[] args) {
-		
-		
-
-	         //root element
-	         /*Element carsElement = new Element("Estudiantes");
-	         Document doc = new Document(carsElement);
-
-	         XMLOutputter xmlOutput = new XMLOutputter();
-	         xmlOutput.setFormat(Format.getPrettyFormat());
-	 		try {
-	 			xmlOutput.output(doc, new FileWriter("src/main/java/carnes.xml"));
-	 		} catch (IOException e) {
-	 			e.printStackTrace();
-	 		}*/
-	 		
-	
-	   
-}
 	}

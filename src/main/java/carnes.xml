@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Estudiantes>
-  <E2018135360 Viajes="2" NCalificaciones="0" Calificacion="0" Residencia="5">
+  <E2018319311 Viajes="0" NCalificaciones="0" Calificacion="0">
+    <E2018102753 />
+  </E2018319311>
+  <E2018102753 Viajes="5" NCalificaciones="0" Calificacion="0">
+    <E2018135360 />
+    <E2018319311 />
+  </E2018102753>
+  <E2018135360 Viajes="0" NCalificaciones="0" Calificacion="0">
     <E2018102753 />
   </E2018135360>
-  <E2018135362 Viajes="4" NCalificaciones="0" Calificacion="0" Residencia="3">
-    <E2018135360 />
-  </E2018135362>
-  <E2018135361 Viajes="0" NCalificaciones="2" Calificacion="10" Residencia="2">
-    <E2018135360 />
-  </E2018135361>
-  <E2018102753 Viajes="0" NCalificaciones="0" Calificacion="0">
-    <E2018102753 />
-    <E2018135360 />
-  </E2018102753>
 </Estudiantes>

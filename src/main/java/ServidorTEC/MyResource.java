@@ -1,6 +1,9 @@
 package ServidorTEC;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ import lógica.Grafo;
 @Path("myresource")
 public class MyResource {
 	Almacenador A=new Almacenador();
+	DateFormat hourdateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 	
 	@GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -36,6 +40,8 @@ public class MyResource {
     public String Mapa() {
     	Grafo G=new Grafo(31);
     	G.AdyacenciafromXML();
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se envia el mapa");
     	return G.MatrizToJson();
     }
@@ -44,6 +50,8 @@ public class MyResource {
     @Path("NuevoAmigo")//
     @Produces(MediaType.APPLICATION_JSON)
     public String NuevoAmigo(@FormParam("Conductor") String CarneConductor,@FormParam("Amigo") String CarneAmigo) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se agrega a "+CarneAmigo+" como un amigo de "+CarneConductor);
     	return A.AgregarAmigo(CarneConductor, CarneAmigo);
     }
@@ -52,14 +60,18 @@ public class MyResource {
     @Path("Residencia")//
     @Produces(MediaType.APPLICATION_JSON)
     public void Residencia(@FormParam("Carne") String Carne,@FormParam("Residencia") String Residencia) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Residencia "+Residencia+" de "+Carne);
     	A.GuardarResidencia(Carne, Residencia);
     }
     
     @GET
-    @Path("Top5")
+    @Path("Top5")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Top5() {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se envia el top");
     	return A.Top5();
     }
@@ -68,13 +80,15 @@ public class MyResource {
     @Path("Carne")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Carne(@FormParam("Carne") String Carne) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se agrega el carne "+Carne);
     	Almacenador A=new Almacenador();
     	return A.GuardarCarne(Carne);
     }
     
     @POST
-    @Path("RutaSolo")
+    @Path("RutaSolo")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Ruta(
     		@FormParam("Residencia") String Residencia,
@@ -84,24 +98,27 @@ public class MyResource {
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, null) ;
     	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(G.getMejorUltimaRuta(), "", "0",Asientos);
-    	for (int i=0;i<ListaAmigos.size();i++) {
-    		A.SacarDeEspera(Carne,ListaAmigos.get(i).substring(1), "0");
-    	}
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
     	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
     	A.SumarViaje(Carne);
     	Gson gson=new Gson();
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se inicia el viaje solo de "+Carne+" junto a "+ListaAmigos.toString()+" por la ruta "+ListaPos.toString());
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
     			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
     			", \"PosicionesPasajeros\":"+gson.toJson(ListaPos)+
+    			", \"Conductor\":"+gson.toJson(Carne)+
     			"}";
+    	for (int i=0;i<ListaAmigos.size();i++) {
+    		A.SacarDeEspera(json,ListaAmigos.get(i).substring(1), "0");
+    	}
     	return json;
     }
     
     @POST
-    @Path("RutaAmigo")
+    @Path("RutaAmigo")//
     @Produces(MediaType.APPLICATION_JSON)
     public String RutaAmigo(
     		@FormParam("Residencia") String Residencia,
@@ -111,29 +128,45 @@ public class MyResource {
     	Almacenador A=new Almacenador(); 
     	LinkedList<String> ListaAmigos=A.ConsultarEnEspera(null, Carne, "1",Asientos);
     	LinkedList<Integer> ListaPos=A.getPosGenteEnEspera();
-    	for (int i=0;i<ListaAmigos.size();i++) {
-    		A.SacarDeEspera(Carne,ListaAmigos.get(i).substring(1), "1");
-    	}
+    	
     	Grafo G=new Grafo(31);
     	G.ConsultarCaminoAmigos(Integer.parseInt(Residencia),0, ListaPos) ;
     	A.RegistrarViaje(Carne, ListaAmigos,ListaPos, ""+G.getMejorUltimaRuta().get(0),"1");
     	A.SumarViaje(Carne);
     	Gson gson=new Gson();
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se inicia el viaje con amigos de "+Carne+" junto a "+ListaAmigos.toString()+" por la ruta "+ListaPos.toString());
     	String json="{\"Tiempos\":"+gson.toJson(G.getTiempos())+
     			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
     			", \"Pasajeros\":"+gson.toJson(ListaAmigos)+
     			", \"PosicionesPasajeros\":"+gson.toJson(ListaPos)+
+    			", \"Conductor\":"+gson.toJson(Carne)+
     			"}";
+    	for (int i=0;i<ListaAmigos.size();i++) {
+    		A.SacarDeEspera(json,ListaAmigos.get(i).substring(1), "1");
+    	}
     	return json;
     }
     
     @POST
-    @Path("SeguirEsperando")
+    @Path("SeguirEsperando")//
     @Produces(MediaType.APPLICATION_JSON)
     public String SeguirEsperando(@FormParam("SoloAmigos") String IsAmigo,@FormParam("Carne") String Carne) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se consulta por la espera de "+Carne);
     	return A.SeguirEsperando(Carne, IsAmigo);
+    }
+    
+    @POST
+    @Path("CerrarViaje")//
+    @Produces(MediaType.APPLICATION_JSON)
+    public String CerrarViaje(@FormParam("Carne") String Carne) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
+    	System.out.println("Se cierra el viaje del conductor "+Carne);
+    	return A.CerraViaje(Carne);
     }
     
     @POST
@@ -173,23 +206,33 @@ public class MyResource {
         			", \"Ruta\":"+gson.toJson(G.getMejorUltimaRuta())+
         			"}";
     	}
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("El viaje de "+Carne+"Se actualiza en "+Pos);
     	return json;
     }
     
     @POST
-    @Path("Calificar")
+    @Path("Calificar")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Calificar(@FormParam("Calificacion") String Calificacion,@FormParam("Carne") String Carne) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se califica a "+Carne+" con "+Calificacion);
-    	return A.SumarCalificacion(Carne, Calificacion);
+    	return A.SumarCalificacion(Carne, Calificacion.substring(0,1));
     }
     
     @POST
-    @Path("CalificacionPropia")
+    @Path("CalificacionPropia")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Calificar(@FormParam("Carne") String Carne) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se consulta la calificacion de "+Carne);
+    	if (Carne.equals("null")) {
+    		System.out.println("null?");
+    		return "0";
+    	}
     	return ""+A.ConsultarCalificacionPromedio(Carne);
     }
     
@@ -206,17 +249,21 @@ public class MyResource {
     	String json="{\"Amigos\":"+gson.toJson(ListaAmigos)+
     			", \"Calificaciones\":"+gson.toJson(ListaCalificacion)+
     			"}";
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se consultan los amigos de "+Carne);
     	return json;
     }
     
     @POST
-    @Path("Espera")
+    @Path("Espera")//
     @Produces(MediaType.APPLICATION_JSON)
     public String Espera(@FormParam("Carne") String Carne,
     		@FormParam("Residencia") String Residencia,
     		@FormParam("SoloAmigos") String IsAmigos) {
-    	System.out.println("Se pone en espera a "+Carne+",Quiero amigo="+IsAmigos);
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
+    	System.out.println("Se pone en espera a "+Carne+" en la residencia "+Residencia+",Quiero amigo="+IsAmigos);
     	return A.PonerEnEspera(Carne, Residencia, IsAmigos);
     }
     
@@ -225,6 +272,8 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String SalirEspera(@FormParam("Carne") String Carne,
     		@FormParam("SoloAmigos") String IsAmigos) {
+    	Date date = new Date();
+    	System.out.print("Hora y fecha: "+hourdateFormat.format(date));
     	System.out.println("Se se saca de espera a "+Carne);
     	return A.SacarDeEspera("1",Carne, IsAmigos);
     }
