@@ -91,6 +91,30 @@ public class Almacenador {
 		}
 		return "0";
 	}
+	/**
+	 * Se usa para notificar a todos los viajes que actualicen sus rutas
+	 */
+	public void RegistrarActulizacion() {
+			try {
+				File inputFile = new File(RutaViajes);
+	            SAXBuilder saxBuilder = new SAXBuilder();
+	            Document doc;
+				doc = saxBuilder.build(inputFile);
+				Element rootElement = doc.getRootElement();
+		        List<Element> ListaViajes=rootElement.getChildren();
+		        for (int i=0;i<ListaViajes.size();i++) {
+		        	ListaViajes.get(i).setAttribute("ActualizarRuta",""+(ListaViajes.get(i).getChildren().size()+1) );
+		        }
+		        XMLOutputter xmlOutput = new XMLOutputter();
+	            xmlOutput.setFormat(Format.getPrettyFormat());
+				xmlOutput.output(doc, new FileWriter(RutaViajes));
+			} catch (JDOMException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+	
 
 	/**
 	 * Busca el tiempo de un viaje por carne
@@ -109,18 +133,18 @@ public class Almacenador {
 	        int criterio =0;
 	        if (supercarElement!=null) {
 	        	supercarElement.setAttribute("Pos", Pos);
-	        	if (supercarElement.getAttributeValue("ActualizarRuta" ).equals("1")) {
+	        	if (!supercarElement.getAttributeValue("ActualizarRuta" ).equals("0")) {
+	        		supercarElement.setAttribute("ActualizarRuta",""+ (Integer.parseInt(supercarElement.getAttributeValue("ActualizarRuta" ))-1));
 					L.add(Integer.parseInt(Pos));
-					if (supercarElement.getAttributeValue("IsAmigo" ).equals("1")) {
+					if (supercarElement.getAttributeValue("IsAmigo" ).equals("0")) {
 						criterio=1;
 					}
 				}
 	        	for (int i=0;i<ListaAmigos.size();i++) {
 					if (ListaAmigos.get(i).getText().equals(Pos)) {
-						//supercarElement.removeChild(ListaAmigos.get(i).getName());
+						supercarElement.removeChild(ListaAmigos.get(i).getName());
 					}
 					else if (criterio==1) {
-						
 						L.add(Integer.parseInt(ListaAmigos.get(i).getText()));
 					}
 				}
@@ -228,8 +252,8 @@ public class Almacenador {
 	public String Top5() {
 		List<Element> L;
 		LinkedList<Element> LE=new LinkedList<Element>();
-		String[] Top=new String[5];
-		String[] Viajes=new String[5];
+		LinkedList<String> Top=new LinkedList<String>();
+		LinkedList<String> Viajes=new LinkedList<String>();
 		try {
 			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -254,8 +278,8 @@ public class Almacenador {
 	        		Element Etmp=LE.get(i);
 	        		LE.set(i, LE.get(index));
 	        		LE.set(index, Etmp);
-	        		Top[i]=LE.get(i).getName();
-	        		Viajes[i]=""+mayor;
+	        		Top.add(LE.get(i).getName());
+	        		Viajes.add(""+mayor);
 	        	}
 	        XMLOutputter xmlOutput = new XMLOutputter();
 	        xmlOutput.setFormat(Format.getPrettyFormat());
@@ -267,7 +291,15 @@ public class Almacenador {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String[][] S= {Top,Viajes};
+		
+		String[] Top1=new String[Top.size()];
+		String[] Viajes1=new String[Top.size()];
+		for (int i=0;i<Top.size();i++) {
+			Top1[i]=Top.get(i);
+			Viajes1[i]=Viajes.get(i);
+		}
+		
+		String[][] S= {Top1,Viajes1};
 		Gson gson=new Gson();
 		return gson.toJson(S);
 	}
@@ -517,6 +549,9 @@ public class Almacenador {
 	 * @return false si ya eran amigos, true si no
 	 */
 	public String AgregarAmigo(String CarnePropio,String CarneAmigo) {
+		if(CarnePropio.equals(CarneAmigo)) {
+			return "No puede agregarse a si mismo";
+		}
 		try {
 			File inputFile = new File(RutaCarne);
             SAXBuilder saxBuilder = new SAXBuilder();

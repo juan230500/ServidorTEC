@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Viajes>
-  <E2018102753 ActualizarRuta="0" Pos="10" IsAmigo="1">
-    <E2018135360>19</E2018135360>
-    <E2018319311>3</E2018319311>
-  </E2018102753>
+  <E2018148940 ActualizarRuta="0" Pos="19" IsAmigo="1" />
+  <E2018102753 ActualizarRuta="0" Pos="11" IsAmigo="1" />
+  <E2018319311 ActualizarRuta="0" Pos="15" IsAmigo="1" />
 </Viajes>

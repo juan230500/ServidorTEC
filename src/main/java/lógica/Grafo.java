@@ -48,7 +48,7 @@ public class Grafo {
 		this.MatrizAdyancencia=new int[tamaño][tamaño];
 		this.MatrizFloydVértices=new int[tamaño][tamaño];
 		this.MatrizFloydDistancias=new int[tamaño][tamaño];
-		this.maximo=11;
+		this.maximo=101;
 		this.saxBuilder = new SAXBuilder();
 		this.MejorUltimaRuta=new LinkedList<Integer>();
 		this.Tiempos=new LinkedList<Integer>();
@@ -67,8 +67,12 @@ public class Grafo {
 	}
 	
 	public void EliminarCamino(int A,int B) {
+		this.AdyacenciafromXML();
 		this.MatrizAdyancencia[B][A]=0;
+		this.Floyd();
 		this.toXML(0);
+		this.toXML(1);
+		this.toXML(2);
 	}
 	/**
 	* Ejecuta el algoritmo de floyd conocido teoricamente por devolver una matriz

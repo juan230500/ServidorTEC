@@ -1,6 +1,7 @@
 
 package pruebas;
 
+import lógica.Almacenador;
 import lógica.Grafo;
 
 public class NuevoMapa {

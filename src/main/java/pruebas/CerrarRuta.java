@@ -2,6 +2,7 @@ package pruebas;
 
 import java.util.Random;
 
+import lógica.Almacenador;
 import lógica.Grafo;
 
 public class CerrarRuta {
@@ -15,7 +16,9 @@ public class CerrarRuta {
 			 a=rn.nextInt(30 - 0 + 1) + 0;
 			 b=rn.nextInt(30 - 0 + 1) + 0;
 		}
-		G.EliminarCamino(a, b);
+		G.EliminarCamino(11, 0);
 		System.out.println("Se cierra: "+a+"=>"+b);
+		Almacenador A= new Almacenador();
+		A.RegistrarActulizacion();
 		}
 }

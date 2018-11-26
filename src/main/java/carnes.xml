@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Estudiantes>
-  <E2018319311 Viajes="0" NCalificaciones="0" Calificacion="0">
-    <E2018102753 />
+  <E2018319311 Viajes="70" NCalificaciones="17" Calificacion="61">
+    <E2018135360 />
   </E2018319311>
-  <E2018102753 Viajes="5" NCalificaciones="0" Calificacion="0">
+  <E2018102753 Viajes="35" NCalificaciones="2" Calificacion="8">
     <E2018135360 />
     <E2018319311 />
   </E2018102753>
-  <E2018135360 Viajes="0" NCalificaciones="0" Calificacion="0">
-    <E2018102753 />
+  <E2018135360 Viajes="0" NCalificaciones="5" Calificacion="16">
+    <E2018319311 />
   </E2018135360>
 </Estudiantes>
