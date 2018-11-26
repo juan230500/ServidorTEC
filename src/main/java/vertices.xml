@@ -6,31 +6,31 @@
     <F2 peso="15" />
     <F3 peso="15" />
     <F4 peso="15" />
-    <F5 peso="19" />
+    <F5 peso="17" />
     <F6 peso="15" />
     <F7 peso="15" />
     <F8 peso="15" />
     <F9 peso="15" />
     <F10 peso="15" />
-    <F11 peso="19" />
+    <F11 peso="17" />
     <F12 peso="20" />
-    <F13 peso="19" />
+    <F13 peso="17" />
     <F14 peso="17" />
     <F15 peso="0" />
     <F16 peso="15" />
     <F17 peso="15" />
-    <F18 peso="29" />
-    <F19 peso="0" />
+    <F18 peso="15" />
+    <F19 peso="15" />
     <F20 peso="17" />
     <F21 peso="29" />
     <F22 peso="15" />
     <F23 peso="15" />
     <F24 peso="15" />
-    <F25 peso="19" />
-    <F26 peso="19" />
+    <F25 peso="15" />
+    <F26 peso="17" />
     <F27 peso="20" />
-    <F28 peso="19" />
-    <F29 peso="19" />
+    <F28 peso="17" />
+    <F29 peso="0" />
     <F30 peso="15" />
   </C0>
   <C1>
@@ -53,7 +53,7 @@
     <F16 peso="9" />
     <F17 peso="1" />
     <F18 peso="20" />
-    <F19 peso="9" />
+    <F19 peso="3" />
     <F20 peso="17" />
     <F21 peso="29" />
     <F22 peso="1" />
@@ -284,7 +284,7 @@
     <F16 peso="9" />
     <F17 peso="1" />
     <F18 peso="7" />
-    <F19 peso="9" />
+    <F19 peso="3" />
     <F20 peso="17" />
     <F21 peso="29" />
     <F22 peso="1" />
@@ -317,7 +317,7 @@
     <F16 peso="4" />
     <F17 peso="15" />
     <F18 peso="6" />
-    <F19 peso="0" />
+    <F19 peso="16" />
     <F20 peso="17" />
     <F21 peso="29" />
     <F22 peso="15" />
@@ -350,7 +350,7 @@
     <F16 peso="23" />
     <F17 peso="20" />
     <F18 peso="7" />
-    <F19 peso="9" />
+    <F19 peso="23" />
     <F20 peso="7" />
     <F21 peso="23" />
     <F22 peso="7" />
@@ -515,7 +515,7 @@
     <F16 peso="9" />
     <F17 peso="15" />
     <F18 peso="10" />
-    <F19 peso="9" />
+    <F19 peso="3" />
     <F20 peso="17" />
     <F21 peso="23" />
     <F22 peso="1" />
@@ -812,7 +812,7 @@
     <F16 peso="23" />
     <F17 peso="20" />
     <F18 peso="10" />
-    <F19 peso="10" />
+    <F19 peso="23" />
     <F20 peso="10" />
     <F21 peso="29" />
     <F22 peso="10" />
@@ -845,7 +845,7 @@
     <F16 peso="24" />
     <F17 peso="20" />
     <F18 peso="6" />
-    <F19 peso="9" />
+    <F19 peso="20" />
     <F20 peso="6" />
     <F21 peso="6" />
     <F22 peso="6" />

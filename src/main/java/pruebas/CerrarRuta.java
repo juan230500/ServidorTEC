@@ -16,7 +16,7 @@ public class CerrarRuta {
 			 a=rn.nextInt(30 - 0 + 1) + 0;
 			 b=rn.nextInt(30 - 0 + 1) + 0;
 		}
-		G.EliminarCamino(11, 0);
+		G.EliminarCamino(19, 0);
 		System.out.println("Se cierra: "+a+"=>"+b);
 		Almacenador A= new Almacenador();
 		A.RegistrarActulizacion();

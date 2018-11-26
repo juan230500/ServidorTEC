@@ -423,6 +423,7 @@ public class Almacenador {
 			Element rootElement = doc.getRootElement();
 			Element supercarElement;
 			int maximo=Integer.parseInt(max);
+			System.out.println("$$$"+maximo);
 			if (IsAmigos.equals("1")) {
 				supercarElement=rootElement.getChild("Amigos");
 				LinkedList<String> Laux=this.ConsultarAmigos(Carne);
@@ -438,7 +439,7 @@ public class Almacenador {
 				supercarElement=rootElement.getChild("Cualquiera");
 				for (int i=0;i<Ruta.size() && i<maximo;i++) {
 					List<Element> ListaEspera=supercarElement.getChildren();
-					for (int j=0;j<ListaEspera.size();j++) {
+					for (int j=0;j<ListaEspera.size() && i<maximo;j++) {
 						Element tmp=ListaEspera.get(j);
 						if (tmp.getAttributeValue("Residencia").equals(""+Ruta.get(i))) {
 							L.add(tmp.getName());
